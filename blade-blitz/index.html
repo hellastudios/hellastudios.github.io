@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blade Blitz — Chaotic sword duels with friends.</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  :root {
+    --bg:          #0d0914;
+    --bg-2:        #15101e;
+    --bg-3:        #1e1628;
+    --bg-card:     #190f22;
+    --fg:          #ffffff;
+    --fg-2:        rgba(255,255,255,0.65);
+    --fg-3:        rgba(255,255,255,0.3);
+    --border:      rgba(255,255,255,0.1);
+    --border-soft: rgba(255,255,255,0.05);
+    --yellow:      #FFD60A;
+    --yellow-dim:  #c8a800;
+    --orange:      #FF8C00;
+  }
+
+  body { background: var(--bg); color: var(--fg); font-family: var(--font-sans); }
+  ::selection { background: var(--yellow); color: var(--bg); }
+  a { color: inherit; }
+  button { font-family: inherit; }
+
+  /* ── nav ── */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(13,9,20,0.85);
+    backdrop-filter: blur(14px) saturate(130%);
+    -webkit-backdrop-filter: blur(14px) saturate(130%);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  nav .inner { display: flex; align-items: center; height: 64px; gap: 20px; }
+  .nav-back {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--fg-3);
+    transition: color 0.15s;
+  }
+  .nav-back:hover { color: var(--fg-2); }
+  .nav-back svg { flex-shrink: 0; }
+  .nav-divider { width: 1px; height: 20px; background: var(--border); flex-shrink: 0; }
+  .nav-logo {
+    font-weight: 700; font-size: 18px; letter-spacing: -0.02em;
+    text-transform: uppercase; color: var(--yellow);
+  }
+  nav .spacer { flex: 1; }
+  .nav-cta {
+    background: var(--yellow); color: var(--bg);
+    padding: 10px 18px; border-radius: 999px;
+    font-size: 13px; font-weight: 700; letter-spacing: -0.01em;
+    border: 0; cursor: pointer;
+    transition: transform 0.18s, background 0.18s;
+  }
+  .nav-cta:hover { background: #ffe033; transform: translateY(-1px); }
+
+  /* ── shared section parts ── */
+  .eyebrow {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--fg-3);
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-bottom: 24px;
+  }
+  .eyebrow::before { content: ""; width: 6px; height: 6px; background: var(--yellow); display: inline-block; flex-shrink: 0; }
+
+  /* ── hero ── */
+  .hero {
+    padding: clamp(72px, 9vw, 128px) 0 clamp(64px, 7vw, 96px);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute; top: -30%; left: 40%;
+    width: 900px; height: 800px;
+    background: radial-gradient(ellipse at center, rgba(255,214,10,0.1) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+  }
+  .hero .inner { position: relative; z-index: 1; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,214,10,0.12); border: 1px solid rgba(255,214,10,0.25);
+    border-radius: 999px; padding: 6px 14px 6px 10px;
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--yellow);
+    margin-bottom: 32px;
+  }
+  .hero-badge .dot { width: 6px; height: 6px; background: var(--yellow); border-radius: 50%; flex-shrink: 0; }
+  .hero h1 {
+    font-size: clamp(56px, 8.5vw, 128px);
+    font-weight: 700; letter-spacing: -0.04em; line-height: 0.95;
+    text-transform: uppercase; color: var(--yellow);
+    margin-bottom: 32px; max-width: 10ch;
+  }
+  .hero .tagline {
+    font-size: clamp(20px, 2.2vw, 30px);
+    font-weight: 600; letter-spacing: -0.02em; line-height: 1.3;
+    color: var(--fg); max-width: 22ch; margin-bottom: 20px;
+  }
+  .hero .sub {
+    font-size: clamp(15px, 1.2vw, 17px); line-height: 1.6;
+    color: var(--fg-2); max-width: 50ch; margin-bottom: 44px;
+  }
+  .btn-steam {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--yellow); color: var(--bg);
+    padding: 16px 28px; border-radius: 12px; border: 0;
+    font-size: 16px; font-weight: 700; letter-spacing: -0.01em;
+    cursor: pointer; transition: transform 0.18s, background 0.18s;
+    text-decoration: none;
+  }
+  .btn-steam:hover { background: #ffe033; transform: translateY(-2px); }
+  .btn-steam svg { flex-shrink: 0; }
+  .hero-meta { margin-top: 20px; font-family: var(--font-mono); font-size: 12px; color: var(--fg-3); letter-spacing: 0.06em; display: inline-flex; align-items: center; gap: 8px; }
+
+  /* ── cast ── */
+  .cast { padding: clamp(64px,7vw,96px) 0; border-top: 1px solid var(--border-soft); }
+  .cast-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 48px; }
+  @media (max-width: 760px) { .cast-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 400px) { .cast-grid { grid-template-columns: 1fr 1fr; gap: 12px; } }
+  .cast-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 18px; padding: 28px 20px 24px;
+    text-align: center; transition: transform 0.2s, border-color 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .cast-card:hover { transform: translateY(-3px); border-color: rgba(255,214,10,0.3); }
+  .cast-card::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(255,214,10,0.06), transparent 70%); pointer-events: none; }
+  .cast-emoji { font-size: 48px; line-height: 1; margin-bottom: 14px; display: block; }
+  .cast-name { font-weight: 700; font-size: 18px; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .cast-role { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
+
+  /* ── features ── */
+  .features { padding: clamp(72px,8vw,112px) 0; border-top: 1px solid var(--border-soft); }
+  .section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; margin-bottom: 56px; flex-wrap: wrap; }
+  .section-head h2 { font-size: clamp(34px, 4.5vw, 64px); font-weight: 700; letter-spacing: -0.04em; line-height: 1.0; margin-top: 12px; }
+  .section-head .right-meta { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); text-transform: uppercase; letter-spacing: 0.12em; text-align: right; line-height: 1.7; }
+  .features-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  @media (max-width: 640px) { .features-list { grid-template-columns: 1fr; } }
+  .feat-card {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 18px; padding: 28px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .feat-card:hover { border-color: rgba(255,214,10,0.3); transform: translateY(-2px); }
+  .feat-card .feat-icon { font-size: 32px; margin-bottom: 18px; line-height: 1; }
+  .feat-card h3 { font-size: 20px; font-weight: 700; letter-spacing: -0.025em; margin-bottom: 10px; }
+  .feat-card p { font-size: 14.5px; color: var(--fg-2); line-height: 1.55; }
+  .feat-tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); margin-top: 18px; }
+
+  /* ── final cta ── */
+  .final {
+    padding: clamp(80px,10vw,128px) 0;
+    border-top: 1px solid var(--border-soft);
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .final::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 100%, rgba(255,214,10,0.08), transparent 60%); pointer-events: none; }
+  .final .inner { position: relative; z-index: 1; }
+  .final h2 { font-size: clamp(48px, 7vw, 108px); font-weight: 700; letter-spacing: -0.04em; line-height: 0.96; text-transform: uppercase; color: var(--yellow); margin: 16px auto 28px; max-width: 12ch; }
+  .final .sub { font-size: 18px; color: var(--fg-2); max-width: 36ch; margin: 0 auto 44px; line-height: 1.55; }
+  .final .platform-note { margin-top: 18px; font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* ── footer ── */
+  footer { border-top: 1px solid var(--border-soft); padding: 36px 0; }
+  footer .row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+  .footer-brand { font-weight: 700; font-size: 16px; letter-spacing: -0.02em; text-transform: uppercase; color: var(--yellow); }
+  .footer-copy { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); letter-spacing: 0.06em; text-transform: uppercase; }
+  .footer-parent { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); letter-spacing: 0.06em; text-transform: uppercase; }
+  .footer-parent a:hover { color: var(--fg-2); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="shell inner">
+    <a href="../" class="nav-back">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3L5 7l4 4"/></svg>
+      Hella Studios
+    </a>
+    <span class="nav-divider"></span>
+    <span class="nav-logo">Blade Blitz</span>
+    <span class="spacer"></span>
+    <button class="nav-cta">Wishlist on Steam</button>
+  </div>
+</nav>
+
+<!-- hero -->
+<section class="hero">
+  <div class="shell inner">
+    <div class="hero-badge"><span class="dot"></span>Coming Soon &middot; PC &middot; Steam</div>
+    <h1>Blade<br/>Blitz</h1>
+    <p class="tagline">Chaotic sword duels with friends.</p>
+    <p class="sub">Fast local multiplayer combat where timing, positioning, and sword control determine who gets pushed off the screen.</p>
+    <a href="#" class="btn-steam">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M10 0C4.477 0 0 4.477 0 10c0 4.418 2.865 8.166 6.839 9.489l2.413-4.975A2.5 2.5 0 0 1 10 9.5a2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5 2.5 2.5 0 0 1-.09-.003l-2.376 4.897C8.341 19.79 9.163 20 10 20c5.523 0 10-4.477 10-10S15.523 0 10 0z"/>
+      </svg>
+      Wishlist on Steam
+    </a>
+    <div class="hero-meta">Local &amp; Steam Remote Play &nbsp;&middot;&nbsp; Coming soon</div>
+  </div>
+</section>
+
+<!-- cast -->
+<section class="cast">
+  <div class="shell">
+    <div class="eyebrow">The roster</div>
+    <div class="cast-grid">
+      <div class="cast-card">
+        <span class="cast-emoji">🐦</span>
+        <div class="cast-name">Bird</div>
+        <div class="cast-role">Swift &middot; Aerial</div>
+      </div>
+      <div class="cast-card">
+        <span class="cast-emoji">🐱</span>
+        <div class="cast-name">Cat</div>
+        <div class="cast-role">Agile &middot; Precise</div>
+      </div>
+      <div class="cast-card">
+        <span class="cast-emoji">🐊</span>
+        <div class="cast-name">Alligator</div>
+        <div class="cast-role">Heavy &middot; Relentless</div>
+      </div>
+      <div class="cast-card">
+        <span class="cast-emoji">🦭</span>
+        <div class="cast-name">Seal</div>
+        <div class="cast-role">Slippery &middot; Surprising</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- features -->
+<section class="features" id="features">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">Why you'll love it</div>
+        <h2>Built for<br/>couch chaos.</h2>
+      </div>
+      <div class="right-meta">Simple to pick up<br/>hard to put down</div>
+    </div>
+
+    <div class="features-list">
+      <div class="feat-card">
+        <div class="feat-icon">&#9876;</div>
+        <h3>Local Multiplayer</h3>
+        <p>Plug in controllers and go. No accounts, no setup, no waiting for matchmaking. Just instant fun with people in the room.</p>
+        <div class="feat-tag">&#9616; Party Play</div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">&#8646;</div>
+        <h3>Back-and-Forth Combat</h3>
+        <p>Inspired by Nidhogg — every match is a tug of war. Push your opponent back, take ground, hold the line. Momentum shifts in an instant.</p>
+        <div class="feat-tag">&#9616; Gameplay</div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">&#127918;</div>
+        <h3>Steam Remote Play</h3>
+        <p>Play over the internet like you're in the same room. Challenge friends anywhere with Steam Remote Play Together.</p>
+        <div class="feat-tag">&#9616; Online</div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">&#127894;</div>
+        <h3>Timing &amp; Skill</h3>
+        <p>Every duel demands real technique. Block, dodge, and strike with precision. The cartoon look hides a surprisingly deep combat system.</p>
+        <div class="feat-tag">&#9616; Depth</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- final cta -->
+<section class="final">
+  <div class="shell inner">
+    <div class="eyebrow" style="justify-content:center;display:inline-flex;">Wishlist now</div>
+    <h2>Get<br/>Ready.</h2>
+    <p class="sub">Blade Blitz is coming to Steam. Add it to your wishlist to get notified when it launches.</p>
+    <a href="#" class="btn-steam">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M10 0C4.477 0 0 4.477 0 10c0 4.418 2.865 8.166 6.839 9.489l2.413-4.975A2.5 2.5 0 0 1 10 9.5a2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5 2.5 2.5 0 0 1-.09-.003l-2.376 4.897C8.341 19.79 9.163 20 10 20c5.523 0 10-4.477 10-10S15.523 0 10 0z"/>
+      </svg>
+      Wishlist on Steam
+    </a>
+    <div class="platform-note">PC &middot; Windows &middot; Steam Remote Play</div>
+  </div>
+</section>
+
+<!-- footer -->
+<footer>
+  <div class="shell row">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <span class="footer-brand">Blade Blitz</span>
+      <span class="footer-parent">/ <a href="../">Hella Studios</a></span>
+    </div>
+    <span class="footer-copy">&copy; 2026 Hella Studios</span>
+  </div>
+</footer>
+
+</body>
+</html>

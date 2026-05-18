@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hella Studios — Small games and useful apps built with care.</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  :root {
+    --bg: #0e0e0c;
+    --bg-2: #141410;
+    --bg-3: #1c1c18;
+    --fg: #f5f3ee;
+    --fg-2: rgba(245,243,238,.62);
+    --fg-3: rgba(245,243,238,.3);
+    --border: rgba(245,243,238,.1);
+    --border-soft: rgba(245,243,238,.06);
+    --lime: #C5FF00;
+  }
+
+  body { background: var(--bg); color: var(--fg); font-family: var(--font-sans); }
+  ::selection { background: var(--lime); color: #0e0e0c; }
+
+  /* ── nav ── */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(14,14,12,.82);
+    backdrop-filter: blur(14px) saturate(130%);
+    -webkit-backdrop-filter: blur(14px) saturate(130%);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  nav .inner {
+    display: flex; align-items: center; height: 64px; gap: 8px;
+  }
+  .nav-logo {
+    font-weight: 700; font-size: 20px; letter-spacing: -0.03em;
+    display: inline-flex; align-items: baseline; gap: 2px;
+    flex-shrink: 0;
+  }
+  .nav-logo .dot {
+    width: 7px; height: 7px; background: var(--lime);
+    display: inline-block; margin-bottom: 3px; flex-shrink: 0;
+  }
+  nav ul {
+    display: flex; gap: 24px; margin-left: 16px;
+    font-size: 14px; color: var(--fg-2);
+  }
+  nav ul a { transition: color .15s; }
+  nav ul a:hover { color: var(--fg); }
+  nav .spacer { flex: 1; }
+
+  /* ── hero ── */
+  .hero {
+    padding: clamp(88px,10vw,144px) 0 clamp(80px,8vw,120px);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute; top: -20%; left: 50%;
+    transform: translateX(-50%);
+    width: 900px; height: 700px;
+    background: radial-gradient(ellipse at center, rgba(197,255,0,.07) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--fg-2);
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-bottom: 28px;
+  }
+  .eyebrow::before {
+    content: ""; width: 6px; height: 6px; background: var(--lime);
+    display: inline-block; flex-shrink: 0;
+  }
+  .hero h1 {
+    font-size: clamp(44px,6.5vw,96px);
+    font-weight: 600; letter-spacing: -0.04em; line-height: 1.02;
+    max-width: 16ch; margin-bottom: 28px;
+  }
+  .hero .sub {
+    font-size: clamp(16px,1.3vw,19px);
+    color: var(--fg-2); line-height: 1.6;
+    max-width: 52ch; margin-bottom: 44px;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--fg); color: var(--bg);
+    padding: 14px 28px; border-radius: 999px;
+    font-size: 15px; font-weight: 600; letter-spacing: -0.01em;
+    transition: transform .18s, background .18s;
+  }
+  .btn-primary:hover { background: #fff; transform: translateY(-1px); }
+
+  /* ── projects ── */
+  .projects {
+    padding: clamp(72px,8vw,112px) 0;
+    border-top: 1px solid var(--border);
+  }
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--fg-3);
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-bottom: 48px;
+  }
+  .section-label::before {
+    content: ""; width: 6px; height: 6px; background: var(--lime); display: inline-block;
+  }
+  .projects-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  }
+  @media (max-width: 760px) { .projects-grid { grid-template-columns: 1fr; } }
+
+  .project-card {
+    border-radius: 20px; padding: 40px 40px 36px;
+    min-height: 420px; display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+    transition: transform .22s;
+  }
+  .project-card:hover { transform: translateY(-3px); }
+  @media (max-width: 480px) { .project-card { padding: 28px; min-height: 340px; } }
+
+  /* Habite card */
+  .card-habite {
+    background: #f0eee9; color: #14130f;
+    border: 1px solid #d9d6cf;
+  }
+  .habite-tag {
+    font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+    color: #807c73; margin-bottom: 28px;
+  }
+  .habite-wordmark {
+    font-size: 34px; font-weight: 700; letter-spacing: -0.04em;
+    display: inline-flex; align-items: baseline; gap: 2px;
+    margin-bottom: 18px; color: #14130f; line-height: 1;
+  }
+  .habite-wordmark .sq {
+    width: 10px; height: 10px; background: #C5FF00;
+    margin-left: 2px; margin-bottom: 5px; flex-shrink: 0;
+  }
+  .card-habite .card-desc {
+    font-size: 17px; color: #44423d; line-height: 1.55;
+    max-width: 36ch; flex: 1; margin-bottom: 36px;
+  }
+  .card-habite .card-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #0e0e0c; color: #f5f3ee;
+    padding: 12px 22px; border-radius: 999px;
+    font-size: 14px; font-weight: 600; align-self: flex-start;
+    transition: background .15s, transform .15s;
+  }
+  .card-habite:hover .card-cta { background: #000; }
+
+  /* Blade Blitz card */
+  .card-bb {
+    background: #0e0818; color: #fff;
+    border: 1px solid rgba(255,255,255,.08);
+  }
+  .card-bb::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 80% 10%, rgba(255,214,10,.12), transparent 60%);
+    pointer-events: none;
+  }
+  .bb-tag {
+    font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+    color: rgba(255,255,255,.35); margin-bottom: 28px;
+  }
+  .bb-wordmark {
+    font-size: 34px; font-weight: 700; letter-spacing: -0.03em;
+    text-transform: uppercase; color: #FFD60A;
+    margin-bottom: 18px; line-height: 1.05;
+  }
+  .card-bb .card-desc {
+    font-size: 17px; color: rgba(255,255,255,.62); line-height: 1.55;
+    max-width: 36ch; flex: 1; margin-bottom: 36px;
+  }
+  .card-bb .card-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #FFD60A; color: #0e0818;
+    padding: 12px 22px; border-radius: 999px;
+    font-size: 14px; font-weight: 700; align-self: flex-start;
+    transition: background .15s, transform .15s;
+  }
+  .card-bb:hover .card-cta { background: #ffe033; }
+
+  /* ── footer ── */
+  footer {
+    border-top: 1px solid var(--border-soft);
+    padding: 36px 0;
+  }
+  footer .inner {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .footer-logo {
+    font-weight: 700; font-size: 16px; letter-spacing: -0.02em;
+    display: inline-flex; align-items: baseline; gap: 2px;
+  }
+  .footer-logo .dot { width: 6px; height: 6px; background: var(--lime); display: inline-block; margin-bottom: 2px; }
+  .footer-copy {
+    font-family: var(--font-mono);
+    font-size: 11px; color: var(--fg-3); letter-spacing: .06em; text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="shell inner">
+    <a href="#" class="nav-logo">Hella Studios<span class="dot"></span></a>
+    <ul>
+      <li><a href="habite/">Habite</a></li>
+      <li><a href="blade-blitz/">Blade Blitz</a></li>
+    </ul>
+    <span class="spacer"></span>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="shell">
+    <div class="eyebrow">Independent Game &amp; App Studio</div>
+    <h1>Small games and useful apps built with care.</h1>
+    <p class="sub">Hella Studios creates playful games and practical apps designed around simple routines and enjoyable experiences.</p>
+    <a href="#projects" class="btn-primary">Explore Projects</a>
+  </div>
+</section>
+
+<section class="projects" id="projects">
+  <div class="shell">
+    <div class="section-label">Our work</div>
+    <div class="projects-grid">
+
+      <a href="habite/" class="project-card card-habite">
+        <div class="habite-tag">Mobile App &middot; iOS &amp; Android</div>
+        <div class="habite-wordmark">habite<span class="sq"></span></div>
+        <p class="card-desc">Plan your meals before the day starts and build consistent eating habits.</p>
+        <span class="card-cta">View Habite</span>
+      </a>
+
+      <a href="blade-blitz/" class="project-card card-bb">
+        <div class="bb-tag">PC Game &middot; Steam</div>
+        <div class="bb-wordmark">Blade<br>Blitz</div>
+        <p class="card-desc">Fast local multiplayer sword fights with a charming cartoon cast.</p>
+        <span class="card-cta">View Blade Blitz</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="shell inner">
+    <div class="footer-logo">Hella Studios<span class="dot"></span></div>
+    <div class="footer-copy">&copy; 2026 Hella Studios. All rights reserved.</div>
+  </div>
+</footer>
+
+</body>
+</html>

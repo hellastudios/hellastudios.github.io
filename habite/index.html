@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Habite — Plan your food. Follow your routine. Build the habit.</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  /* ── design tokens ── */
+  :root {
+    --paper:      #f0eee9;
+    --paper-2:    #f5f3ee;
+    --ink:        #14130f;
+    --ink-2:      #44423d;
+    --ink-3:      #807c73;
+    --line:       #d9d6cf;
+    --line-soft:  #e6e2da;
+    --slab:       #0e0e0c;
+    --slab-2:     #1a1a17;
+    --slab-3:     #25241f;
+    --slab-line:  rgba(245,243,238,0.12);
+    --slab-line-2:rgba(245,243,238,0.06);
+    --slab-ink:   #f5f3ee;
+    --slab-ink-2: rgba(245,243,238,0.62);
+    --lime:       #C5FF00;
+    --lime-dim:   #a5d600;
+  }
+
+  body { background: var(--paper); color: var(--ink); font-family: var(--font-sans); font-feature-settings: "ss01","cv11"; }
+  ::selection { background: var(--lime); color: var(--slab); }
+  a { color: inherit; }
+  button { font-family: inherit; }
+
+  /* ── shared ── */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-2);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .eyebrow::before { content: ""; width: 6px; height: 6px; background: var(--lime); display: inline-block; }
+  .section-num { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; color: var(--ink-3); text-transform: uppercase; }
+  .display { font-weight: 600; letter-spacing: -0.035em; line-height: 1.02; text-wrap: balance; }
+
+  /* ── nav ── */
+  nav.top {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(240,238,233,0.82);
+    backdrop-filter: saturate(140%) blur(14px);
+    -webkit-backdrop-filter: saturate(140%) blur(14px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  nav.top .shell { display: flex; align-items: center; height: 64px; gap: 32px; }
+
+  /* parent switcher */
+  .brand-row { display: flex; align-items: center; gap: 14px; position: relative; }
+  .parent {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 6px 9px 6px 8px; border-radius: 8px;
+    cursor: pointer; background: transparent; border: 0;
+    transition: background 0.15s; font-family: var(--font-sans);
+  }
+  .parent:hover, .parent[aria-expanded="true"] { background: rgba(20,19,15,0.06); }
+  .parent .mark {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--slab); flex-shrink: 0;
+  }
+  .parent .mark svg { display: block; }
+  .parent .name { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); font-weight: 500; }
+  .parent .chev { color: var(--ink-3); margin-left: -2px; transition: transform 0.18s; }
+  .parent[aria-expanded="true"] .chev { transform: rotate(180deg); color: var(--ink); }
+  .brand-slash { color: var(--line); font-size: 22px; font-weight: 300; user-select: none; transform: translateY(-1px); }
+  .logo { display: inline-flex; align-items: baseline; font-weight: 700; font-size: 22px; letter-spacing: -0.04em; gap: 2px; }
+  .logo::after { content: ""; width: 9px; height: 9px; background: var(--lime); display: inline-block; margin-left: 2px; align-self: flex-end; margin-bottom: 4px; }
+
+  /* dropdown */
+  .switcher {
+    position: absolute; top: calc(100% + 8px); left: 0;
+    width: 300px; background: #fff; border: 1px solid var(--line);
+    border-radius: 14px; padding: 8px;
+    box-shadow: 0 12px 40px -8px rgba(0,0,0,0.12), 0 4px 12px -4px rgba(0,0,0,0.06);
+    opacity: 0; transform: translateY(-4px); pointer-events: none;
+    transition: opacity 0.16s, transform 0.16s; z-index: 60;
+  }
+  .switcher.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .switcher .group-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); padding: 10px 12px 6px; }
+  .switcher .item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 9px; cursor: pointer; text-decoration: none; color: var(--ink); transition: background 0.12s; }
+  .switcher .item:hover { background: var(--paper); }
+  .switcher .item .tile { width: 32px; height: 32px; border-radius: 8px; background: var(--slab); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--lime); font-family: var(--font-sans); font-weight: 700; font-size: 14px; letter-spacing: -0.04em; }
+  .switcher .item .tile.bb { background: #0e0818; color: #FFD60A; font-size: 11px; letter-spacing: 0; }
+  .switcher .item .body { flex: 1; min-width: 0; }
+  .switcher .item .body .nm { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; display: flex; align-items: center; gap: 6px; }
+  .switcher .item .body .nm .badge-curr { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em; color: var(--slab); background: var(--lime); padding: 1px 5px; border-radius: 3px; text-transform: uppercase; font-weight: 500; }
+  .switcher .item .body .desc { font-size: 12px; color: var(--ink-2); line-height: 1.3; margin-top: 2px; }
+  .switcher .item .check { color: var(--ink-3); flex-shrink: 0; opacity: 0; }
+  .switcher .item[aria-current="true"] .check { opacity: 1; color: var(--ink); }
+  .switcher .item .arrow { color: var(--ink-3); flex-shrink: 0; }
+  .switcher .divider { height: 1px; background: var(--line-soft); margin: 6px 4px; }
+  .switcher .footer-link { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px 8px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); cursor: pointer; text-decoration: none; border-radius: 8px; }
+  .switcher .footer-link:hover { color: var(--ink); }
+  .switcher .footer-link svg { transition: transform 0.16s; }
+  .switcher .footer-link:hover svg { transform: translateX(2px); }
+
+  nav.top ul { display: flex; gap: 28px; list-style: none; font-size: 14px; color: var(--ink-2); }
+  nav.top ul a:hover { color: var(--ink); }
+  nav.top .spacer { flex: 1; }
+  nav.top .cta { background: var(--slab); color: var(--paper-2); padding: 10px 16px; border-radius: 999px; font-size: 13px; font-weight: 500; border: 0; cursor: pointer; transition: transform 0.18s, background 0.18s; }
+  nav.top .cta:hover { background: #000; transform: translateY(-1px); }
+
+  @media (max-width: 760px) {
+    nav.top ul { display: none; }
+    .parent .name { display: none; }
+    .parent { padding: 6px; }
+    .switcher { width: 260px; }
+  }
+
+  /* ── hero ── */
+  .hero { padding: 80px 0 96px; }
+  .hero .grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 64px; align-items: center; }
+  .hero h1 { font-size: clamp(40px, 5.6vw, 80px); margin: 24px 0 24px; }
+  .hero .sub { font-size: clamp(16px, 1.3vw, 18px); line-height: 1.55; color: var(--ink-2); max-width: 54ch; margin: 0 0 36px; }
+  .ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+  .store-btn {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--slab); color: var(--paper-2);
+    padding: 14px 22px 14px 18px; border-radius: 12px; border: 0;
+    cursor: pointer; transition: transform 0.18s, background 0.18s; text-align: left;
+  }
+  .store-btn:hover { background: #000; transform: translateY(-1px); }
+  .store-btn .icon { width: 28px; height: 28px; flex-shrink: 0; }
+  .store-btn .label .top { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slab-ink-2); line-height: 1.1; }
+  .store-btn .label .name { font-family: var(--font-sans); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.15; margin-top: 2px; }
+  .hero .below-cta { margin-top: 16px; font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); letter-spacing: 0.02em; display: inline-flex; align-items: center; gap: 8px; }
+  .hero .below-cta .star { color: var(--lime-dim); }
+
+  /* phone mockup */
+  .phone-stage { position: relative; display: flex; justify-content: center; }
+  .phone-stage::before { content: ""; position: absolute; inset: 8% -10% -8% -10%; background: radial-gradient(60% 60% at 50% 60%, rgba(197,255,0,0.18), transparent 65%); z-index: 0; filter: blur(20px); }
+  .phone { position: relative; z-index: 1; width: 300px; aspect-ratio: 300/640; background: var(--slab); border-radius: 44px; padding: 11px; box-shadow: 0 1px 0 1px #2a2924 inset, 0 0 0 1.5px rgba(255,255,255,.04) inset, 0 30px 80px -20px rgba(0,0,0,0.4), 0 12px 30px -10px rgba(0,0,0,.25); }
+  .phone .screen { background: var(--slab-2); width: 100%; height: 100%; border-radius: 33px; overflow: hidden; position: relative; color: var(--slab-ink); display: flex; flex-direction: column; }
+  .phone .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 90px; height: 26px; background: #000; border-radius: 15px; z-index: 5; }
+  .phone .status-bar { display: flex; justify-content: space-between; align-items: center; padding: 14px 22px 0; font-weight: 600; font-size: 13px; color: var(--slab-ink); }
+  .phone .status-bar .right { display: inline-flex; gap: 6px; align-items: center; opacity: 0.95; }
+  .phone .header-row { padding: 28px 20px 12px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .phone .h-title { font-weight: 600; font-size: 24px; letter-spacing: -0.02em; line-height: 1; }
+  .phone .h-date { font-family: var(--font-mono); font-size: 10px; color: var(--slab-ink-2); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 5px; }
+  .phone .progress-card { margin: 4px 16px 12px; background: var(--slab-3); border-radius: 17px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; }
+  .progress-ring { width: 60px; height: 60px; flex-shrink: 0; position: relative; }
+  .progress-ring svg { transform: rotate(-90deg); }
+  .progress-ring .pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; color: var(--slab-ink); letter-spacing: -0.02em; }
+  .progress-card .meta-lbl { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--slab-ink-2); }
+  .progress-card .meta-num { font-weight: 600; font-size: 15px; line-height: 1.1; margin-top: 3px; }
+  .progress-card .col + .col { padding-left: 12px; border-left: 1px solid rgba(245,243,238,0.08); }
+  .phone .checklist { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .meal-row { background: var(--slab-3); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; transition: opacity 0.3s; }
+  .meal-row.done { opacity: 0.55; }
+  .meal-row .checkbox { width: 24px; height: 24px; border-radius: 7px; border: 1.5px solid rgba(245,243,238,0.25); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .meal-row.done .checkbox { background: var(--lime); border-color: var(--lime); }
+  .meal-row.done .checkbox::after { content: ""; width: 11px; height: 6px; border-left: 2.5px solid var(--slab); border-bottom: 2.5px solid var(--slab); transform: rotate(-45deg) translate(1px,-1px); }
+  .meal-row .body { flex: 1; min-width: 0; }
+  .meal-row .meal-name { font-weight: 500; font-size: 14px; letter-spacing: -0.01em; color: var(--slab-ink); }
+  .meal-row.done .meal-name { text-decoration: line-through; text-decoration-thickness: 1.5px; }
+  .meal-row .meal-desc { font-size: 11px; color: var(--slab-ink-2); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .meal-row .kcal { font-family: var(--font-mono); font-size: 10px; color: var(--slab-ink-2); letter-spacing: 0.04em; }
+  .phone .tabbar { margin-top: auto; padding: 10px 24px 20px; display: flex; justify-content: space-between; border-top: 1px solid var(--slab-line-2); }
+  .phone .tabbar .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slab-ink-2); flex: 1; }
+  .phone .tabbar .tab.active { color: var(--lime); }
+  .floater { position: absolute; background: var(--slab); color: var(--paper-2); border-radius: 14px; padding: 11px 14px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; z-index: 2; box-shadow: 0 14px 32px -10px rgba(0,0,0,0.25); }
+  .floater .v { font-family: var(--font-sans); font-weight: 600; font-size: 18px; color: var(--lime); letter-spacing: -0.02em; margin-top: 3px; display: block; }
+  .floater.streak { top: 12%; left: -4%; }
+  .floater.adherence { bottom: 16%; right: -5%; }
+
+  @media (max-width: 960px) { .hero .grid { grid-template-columns: 1fr; gap: 48px; } .phone-stage { order: 2; } .floater { display: none; } }
+  @media (max-width: 480px) { .phone { width: 260px; } }
+
+  /* ── problem ── */
+  .problem { padding: 96px 0 80px; border-top: 1px solid var(--line-soft); }
+  .section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; margin-bottom: 56px; flex-wrap: wrap; }
+  .section-head h2 { margin: 12px 0 0; font-size: clamp(32px, 4vw, 56px); }
+  .section-head .right-meta { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; text-align: right; line-height: 1.6; }
+  .problem-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+  .problem-body { font-size: 19px; line-height: 1.6; color: var(--ink-2); max-width: 44ch; margin-bottom: 40px; }
+  .decision-quotes { display: flex; flex-direction: column; gap: 12px; }
+  .dq {
+    background: var(--slab); color: var(--slab-ink);
+    border-radius: 14px; padding: 20px 22px;
+  }
+  .dq .dq-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--slab-ink-2); margin-bottom: 8px; }
+  .dq .dq-text { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+  @media (max-width: 800px) { .problem-layout { grid-template-columns: 1fr; gap: 40px; } }
+
+  /* ── solution ── */
+  .solution { padding: 96px 0; border-top: 1px solid var(--line-soft); background: var(--slab); color: var(--slab-ink); position: relative; overflow: hidden; }
+  .solution::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(245,243,238,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(245,243,238,.04) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; }
+  .solution .shell { position: relative; }
+  .solution .eyebrow { color: var(--slab-ink-2); }
+  .solution .eyebrow::before { background: var(--lime); }
+  .solution .section-head h2 { color: var(--slab-ink); font-size: clamp(52px, 7vw, 110px); max-width: 10ch; }
+  .solution .section-head .right-meta { color: var(--slab-ink-2); }
+  .solution-body { font-size: clamp(17px, 1.5vw, 22px); line-height: 1.6; color: var(--slab-ink-2); max-width: 50ch; }
+  .solution-body strong { color: var(--slab-ink); font-weight: 500; }
+
+  /* ── features ── */
+  .features { padding: 96px 0; border-top: 1px solid var(--line-soft); background: var(--paper-2); }
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+  .feature { background: var(--paper-2); padding: 28px 24px 32px; display: flex; flex-direction: column; min-height: 200px; transition: background 0.2s; }
+  .feature:hover { background: #fff; }
+  .feature .ico { width: 36px; height: 36px; margin-bottom: 22px; color: var(--slab); display: flex; align-items: center; justify-content: center; }
+  .feature .ico svg { display: block; }
+  .feature h4 { margin: 0 0 6px; font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+  .feature p { margin: 0; font-size: 13.5px; color: var(--ink-2); line-height: 1.5; }
+  .feature .tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; color: var(--ink-3); text-transform: uppercase; margin-top: auto; padding-top: 18px; }
+  @media (max-width: 900px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .features-grid { grid-template-columns: 1fr; } }
+
+  /* ── final cta ── */
+  .final { padding: 112px 0 64px; text-align: center; border-top: 1px solid var(--line-soft); }
+  .final h2 { font-size: clamp(44px, 6.5vw, 100px); margin: 16px auto 24px; max-width: 14ch; }
+  .final .sub { font-size: 18px; color: var(--ink-2); max-width: 36ch; margin: 0 auto 40px; line-height: 1.5; }
+  .final .ctas { justify-content: center; }
+  .final .below-cta { display: block; margin-top: 20px; font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); letter-spacing: 0.04em; }
+
+  /* ── footer ── */
+  footer { border-top: 1px solid var(--line-soft); padding: 36px 0; }
+  footer .row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+  footer .meta { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); letter-spacing: 0.06em; text-transform: uppercase; }
+  .footer-logo { display: inline-flex; align-items: baseline; font-weight: 700; font-size: 18px; letter-spacing: -0.04em; gap: 2px; }
+  .footer-logo::after { content: ""; width: 7px; height: 7px; background: var(--lime); display: inline-block; margin-left: 2px; align-self: flex-end; margin-bottom: 3px; }
+</style>
+</head>
+<body>
+
+<!-- nav -->
+<nav class="top">
+  <div class="shell">
+    <div class="brand-row">
+      <button class="parent" id="parentBtn" aria-expanded="false" aria-haspopup="menu" aria-label="Switch products">
+        <span class="mark" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <circle cx="7" cy="7" r="4.5" stroke="#C5FF00" stroke-width="1.4"/>
+            <rect x="6.3" y="0.6" width="1.4" height="2.4" fill="#C5FF00"/>
+          </svg>
+        </span>
+        <span class="name">Hella</span>
+        <svg class="chev" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4l2.5 2.5L7.5 4"/></svg>
+      </button>
+      <span class="brand-slash" aria-hidden="true">/</span>
+      <a class="logo" href="#">habite</a>
+
+      <div class="switcher" id="switcher" role="menu" aria-labelledby="parentBtn">
+        <div class="group-label">Products</div>
+
+        <a class="item" href="#" role="menuitem" aria-current="true">
+          <span class="tile">h<span style="width:4px;height:4px;background:#C5FF00;display:inline-block;margin-left:1px;align-self:flex-end;margin-bottom:3px;"></span></span>
+          <span class="body">
+            <span class="nm">Habite <span class="badge-curr">Current</span></span>
+            <span class="desc">Meal planning &amp; habit OS</span>
+          </span>
+          <svg class="check" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5l3 3 5-7"/></svg>
+        </a>
+
+        <a class="item" href="../blade-blitz/" role="menuitem">
+          <span class="tile bb">BB</span>
+          <span class="body">
+            <span class="nm">Blade Blitz</span>
+            <span class="desc">Fast local multiplayer game</span>
+          </span>
+          <svg class="arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 3l4 4-4 4"/></svg>
+        </a>
+
+        <div class="divider"></div>
+
+        <a class="footer-link" href="../">
+          <span>Visit Hella Studios</span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l5-5M4 3.5h4.5V8"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <ul>
+      <li><a href="#problem">Problem</a></li>
+      <li><a href="#solution">Solution</a></li>
+      <li><a href="#features">Features</a></li>
+    </ul>
+    <span class="spacer"></span>
+    <button class="cta">Get the app</button>
+  </div>
+</nav>
+
+<!-- hero -->
+<section class="hero">
+  <div class="shell">
+    <div class="grid">
+      <div>
+        <div class="eyebrow">Meal habit OS</div>
+        <h1 class="display">Plan your food.<br/>Follow your routine.<br/>Build the habit.</h1>
+        <p class="sub">
+          Habite helps you commit to what you'll eat before the day begins — removing decision fatigue and ambiguity throughout the day.
+        </p>
+        <div class="ctas">
+          <button class="store-btn" aria-label="Download on App Store">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.95 1.6-2.94 1.524-.123-1.094.413-2.24 1.067-3.04.74-.91 2.05-1.586 3.05-1.564zM21.5 17.18c-.6 1.34-.89 1.94-1.66 3.13-1.07 1.66-2.58 3.74-4.45 3.76-1.66.02-2.09-1.08-4.34-1.07-2.25.01-2.72 1.09-4.38 1.07-1.87-.02-3.3-1.9-4.37-3.56C.04 16.51-.4 11.06 1.7 8.13c1.5-2.09 3.87-3.31 6.1-3.31 2.27 0 3.7 1.25 5.58 1.25 1.82 0 2.93-1.25 5.56-1.25 1.99 0 4.1 1.08 5.6 2.96-4.92 2.7-4.12 9.72.96 9.4z"/>
+            </svg>
+            <div class="label">
+              <div class="top">Download on the</div>
+              <div class="name">App Store</div>
+            </div>
+          </button>
+          <button class="store-btn" aria-label="Get it on Google Play">
+            <svg class="icon" viewBox="0 0 24 24">
+              <path d="M3.6 1.7c-.4.4-.6 1-.6 1.7v17.2c0 .7.2 1.3.6 1.7l.1.1 9.7-9.7v-.3L3.6 1.7z" fill="#C5FF00"/>
+              <path d="M16.7 14.7l-3.3-3.3v-.3L16.7 7.7l.1.05 3.9 2.21c1.1.62 1.1 1.65 0 2.27l-3.9 2.22-.1.04z" fill="#fff"/>
+              <path d="M16.8 14.7l-3.4-3.4L3.6 21.6c.4.4 1 .4 1.8 0l11.4-6.9" fill="#fff" opacity="0.7"/>
+              <path d="M16.8 6.8L5.4 0c-.8-.5-1.4-.4-1.8 0l9.8 9.8 3.4-3z" fill="#fff" opacity="0.5"/>
+            </svg>
+            <div class="label">
+              <div class="top">Get it on</div>
+              <div class="name">Google Play</div>
+            </div>
+          </button>
+        </div>
+        <div class="below-cta"><span class="star">&#9679;</span> Free for 14 days. No credit card.</div>
+      </div>
+
+      <!-- phone mockup -->
+      <div class="phone-stage">
+        <div class="floater streak">Streak<span class="v">28 days</span></div>
+        <div class="floater adherence">Adherence<span class="v">92%</span></div>
+        <div class="phone">
+          <div class="screen">
+            <div class="island"></div>
+            <div class="status-bar">
+              <span>9:41</span>
+              <span class="right">
+                <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="6" width="3" height="5" rx="0.5"/><rect x="4.5" y="4" width="3" height="7" rx="0.5"/><rect x="9" y="2" width="3" height="9" rx="0.5"/><rect x="13.5" y="0" width="3" height="11" rx="0.5"/></svg>
+                <svg width="18" height="11" viewBox="0 0 18 11" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="14" height="10" rx="2.5"/><rect x="2.5" y="2.5" width="10" height="6" rx="1" fill="currentColor"/><rect x="15.5" y="3.5" width="1.5" height="4" rx="0.5" fill="currentColor"/></svg>
+              </span>
+            </div>
+            <div class="header-row">
+              <div>
+                <div class="h-title">Today</div>
+                <div class="h-date">Mon &middot; May 18</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--slab-ink-2)">Streak</div>
+                <div style="font-weight:600;font-size:17px;color:var(--lime);margin-top:2px">28d</div>
+              </div>
+            </div>
+            <div class="progress-card">
+              <div class="progress-ring">
+                <svg width="60" height="60" viewBox="0 0 60 60">
+                  <circle cx="30" cy="30" r="24" fill="none" stroke="rgba(245,243,238,0.1)" stroke-width="5.5"/>
+                  <circle id="ringProgress" cx="30" cy="30" r="24" fill="none" stroke="#C5FF00" stroke-width="5.5" stroke-linecap="round" stroke-dasharray="150.8" stroke-dashoffset="37.7"/>
+                </svg>
+                <div class="pct">75%</div>
+              </div>
+              <div style="display:flex;flex:1;gap:0">
+                <div class="col" style="flex:1"><div class="meta-lbl">Meals</div><div class="meta-num">3 / 4</div></div>
+                <div class="col" style="flex:1"><div class="meta-lbl">Kcal</div><div class="meta-num">1,640</div></div>
+              </div>
+            </div>
+            <div class="checklist">
+              <div class="meal-row done"><div class="checkbox"></div><div class="body"><div class="meal-name">Breakfast</div><div class="meal-desc">Oats &middot; banana &middot; almond butter</div></div><div class="kcal">420</div></div>
+              <div class="meal-row done"><div class="checkbox"></div><div class="body"><div class="meal-name">Lunch</div><div class="meal-desc">Chicken &middot; rice &middot; greens</div></div><div class="kcal">620</div></div>
+              <div class="meal-row"><div class="checkbox"></div><div class="body"><div class="meal-name">Dinner</div><div class="meal-desc">Salmon &middot; sweet potato &middot; salad</div></div><div class="kcal">580</div></div>
+              <div class="meal-row done"><div class="checkbox"></div><div class="body"><div class="meal-name">Snacks</div><div class="meal-desc">Yogurt &middot; berries</div></div><div class="kcal">200</div></div>
+            </div>
+            <div class="tabbar">
+              <div class="tab active">
+                <svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="12" height="12" rx="2"/><path d="M6 9l2 2 4-4"/></svg>
+                Today
+              </div>
+              <div class="tab">
+                <svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="4" width="14" height="11" rx="2"/><path d="M2 8h14"/><path d="M6 2v3M12 2v3"/></svg>
+                Plan
+              </div>
+              <div class="tab">
+                <svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12l4-4 3 3 5-6"/><path d="M3 15h12"/></svg>
+                Stats
+              </div>
+              <div class="tab">
+                <svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="6" r="3"/><path d="M3 16c1-3 3.5-4.5 6-4.5s5 1.5 6 4.5"/></svg>
+                You
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- problem -->
+<section class="problem" id="problem">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <div class="section-num">01 &middot; The problem</div>
+        <h2 class="display">Tracking isn't<br/>the hard part.</h2>
+      </div>
+      <div class="right-meta">The real difficulty<br/>is making decisions</div>
+    </div>
+    <div class="problem-layout">
+      <div>
+        <p class="problem-body">
+          The difficult part is making dozens of food decisions throughout the day. Every choice burns willpower you'd rather spend elsewhere.
+        </p>
+        <p class="problem-body" style="margin-top:0">
+          Logging food as you go creates ambiguity — and ambiguity leads to these familiar thoughts:
+        </p>
+      </div>
+      <div class="decision-quotes">
+        <div class="dq">
+          <div class="dq-label">Thought 01</div>
+          <div class="dq-text">"I'll decide later."</div>
+        </div>
+        <div class="dq">
+          <div class="dq-label">Thought 02</div>
+          <div class="dq-text">"I'll make up for it."</div>
+        </div>
+        <div class="dq">
+          <div class="dq-label">Thought 03</div>
+          <div class="dq-text">"I'll start tomorrow."</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- solution -->
+<section class="solution" id="solution">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">02 &middot; The solution</div>
+        <h2 class="display">Decide once.</h2>
+      </div>
+      <div class="right-meta" style="color:var(--slab-ink-2)">One decision<br/>at the start of the day</div>
+    </div>
+    <p class="solution-body">
+      Create a plan before the day begins and simply follow it.
+      <strong> When the decision is already made, the rest is just execution.</strong>
+    </p>
+  </div>
+</section>
+
+<!-- features -->
+<section class="features" id="features">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <div class="section-num">03 &middot; What's inside</div>
+        <h2 class="display">Everything you need<br/>to build the habit.</h2>
+      </div>
+      <div class="right-meta">5 core features<br/>built around routine</div>
+    </div>
+    <div class="features-grid">
+
+      <div class="feature">
+        <div class="ico">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6">
+            <rect x="6" y="8" width="24" height="22" rx="3"/>
+            <path d="M10 16h16M10 22h12M22 14l2 2 4-4"/>
+          </svg>
+        </div>
+        <h4>Daily Meal Plans</h4>
+        <p>Set what you'll eat before the day starts. One decision, every morning.</p>
+        <div class="tag">&#9616; Planning</div>
+      </div>
+
+      <div class="feature">
+        <div class="ico">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6">
+            <circle cx="18" cy="18" r="12"/>
+            <path d="M13 18l4 4 7-7"/>
+          </svg>
+        </div>
+        <h4>Check-off Flow</h4>
+        <p>Turn eating into a satisfying daily routine. Tap to check off, move on.</p>
+        <div class="tag">&#9616; Routine</div>
+      </div>
+
+      <div class="feature">
+        <div class="ico">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6">
+            <rect x="5" y="8" width="26" height="22" rx="3"/>
+            <path d="M5 14h26M11 5v6M25 5v6"/>
+            <rect x="10" y="18" width="4" height="4" rx="1" fill="currentColor"/>
+            <rect x="16" y="18" width="4" height="4" rx="1" fill="currentColor"/>
+          </svg>
+        </div>
+        <h4>Templates</h4>
+        <p>Create repeatable weekdays and routines. Mondays look like Mondays.</p>
+        <div class="tag">&#9616; Efficiency</div>
+      </div>
+
+      <div class="feature">
+        <div class="ico">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6">
+            <rect x="6" y="20" width="5" height="10"/>
+            <rect x="14" y="14" width="5" height="16"/>
+            <rect x="22" y="8" width="5" height="22" fill="#C5FF00" stroke="none"/>
+            <rect x="22" y="8" width="5" height="22"/>
+          </svg>
+        </div>
+        <h4>Streaks &amp; Stats</h4>
+        <p>Reward consistency over perfection. Watch the streak compound over time.</p>
+        <div class="tag">&#9616; Motivation</div>
+      </div>
+
+      <div class="feature">
+        <div class="ico">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6">
+            <circle cx="18" cy="18" r="12"/>
+            <circle cx="18" cy="18" r="12" stroke="#C5FF00" stroke-dasharray="50 75" stroke-linecap="round" transform="rotate(-90 18 18)"/>
+            <path d="M14 19l3 3 6-7"/>
+          </svg>
+        </div>
+        <h4>Flexible Adherence</h4>
+        <p>Going slightly over shouldn't erase progress. A 70% day is still a 70% deposit.</p>
+        <div class="tag">&#9616; Mindset</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- final cta -->
+<section class="final">
+  <div class="shell">
+    <div class="eyebrow" style="justify-content:center;display:inline-flex;">Ready when you are</div>
+    <h2 class="display">Start building<br/>habits.</h2>
+    <p class="sub">Free for 14 days. No credit card required.</p>
+    <div class="ctas">
+      <button class="store-btn">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.95 1.6-2.94 1.524-.123-1.094.413-2.24 1.067-3.04.74-.91 2.05-1.586 3.05-1.564zM21.5 17.18c-.6 1.34-.89 1.94-1.66 3.13-1.07 1.66-2.58 3.74-4.45 3.76-1.66.02-2.09-1.08-4.34-1.07-2.25.01-2.72 1.09-4.38 1.07-1.87-.02-3.3-1.9-4.37-3.56C.04 16.51-.4 11.06 1.7 8.13c1.5-2.09 3.87-3.31 6.1-3.31 2.27 0 3.7 1.25 5.58 1.25 1.82 0 2.93-1.25 5.56-1.25 1.99 0 4.1 1.08 5.6 2.96-4.92 2.7-4.12 9.72.96 9.4z"/>
+        </svg>
+        <div class="label"><div class="top">Download on the</div><div class="name">App Store</div></div>
+      </button>
+      <button class="store-btn">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path d="M3.6 1.7c-.4.4-.6 1-.6 1.7v17.2c0 .7.2 1.3.6 1.7l.1.1 9.7-9.7v-.3L3.6 1.7z" fill="#C5FF00"/>
+          <path d="M16.7 14.7l-3.3-3.3v-.3L16.7 7.7l.1.05 3.9 2.21c1.1.62 1.1 1.65 0 2.27l-3.9 2.22-.1.04z" fill="#fff"/>
+          <path d="M16.8 14.7l-3.4-3.4L3.6 21.6c.4.4 1 .4 1.8 0l11.4-6.9" fill="#fff" opacity="0.7"/>
+          <path d="M16.8 6.8L5.4 0c-.8-.5-1.4-.4-1.8 0l9.8 9.8 3.4-3z" fill="#fff" opacity="0.5"/>
+        </svg>
+        <div class="label"><div class="top">Get it on</div><div class="name">Google Play</div></div>
+      </button>
+    </div>
+    <span class="below-cta">Free for 14 days. No credit card. Cancel anytime.</span>
+  </div>
+</section>
+
+<!-- footer -->
+<footer>
+  <div class="shell row">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a class="footer-logo" href="#">habite</a>
+      <span class="meta">/ A Hella Studios product</span>
+    </div>
+    <span class="meta">&copy; 2026 Hella Studios</span>
+  </div>
+</footer>
+
+<script>
+  // product switcher dropdown
+  (() => {
+    const btn = document.getElementById('parentBtn');
+    const menu = document.getElementById('switcher');
+    if (!btn || !menu) return;
+    const close = () => { btn.setAttribute('aria-expanded','false'); menu.classList.remove('open'); };
+    const open  = () => { btn.setAttribute('aria-expanded','true');  menu.classList.add('open'); };
+    btn.addEventListener('click', e => { e.stopPropagation(); btn.getAttribute('aria-expanded') === 'true' ? close() : open(); });
+    document.addEventListener('click', e => { if (!menu.contains(e.target) && e.target !== btn) close(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+  })();
+
+  // hero progress ring animate on load
+  (() => {
+    const ring = document.getElementById('ringProgress');
+    if (!ring) return;
+    const C = 2 * Math.PI * 24;
+    ring.style.strokeDashoffset = C;
+    requestAnimationFrame(() => {
+      ring.style.transition = 'stroke-dashoffset 1.4s cubic-bezier(.2,.7,.3,1)';
+      ring.style.strokeDashoffset = C * 0.25;
+    });
+  })();
+</script>
+</body>
+</html>
