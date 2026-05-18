@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service — Habite</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  :root {
+    --paper:       #f0eee9;
+    --paper-2:     #f5f3ee;
+    --ink:         #14130f;
+    --ink-2:       #44423d;
+    --ink-3:       #807c73;
+    --line:        #d9d6cf;
+    --line-soft:   #e6e2da;
+    --slab:        #0e0e0c;
+    --slab-2:      #1a1a17;
+    --slab-ink:    #f5f3ee;
+    --lime:        #C5FF00;
+  }
+
+  body { background: var(--paper); color: var(--ink); font-family: var(--font-sans); font-feature-settings: "ss01","cv11"; }
+  ::selection { background: var(--lime); color: var(--slab); }
+  a { color: inherit; }
+  button { font-family: inherit; }
+
+  /* nav */
+  nav.top {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(240,238,233,0.82);
+    backdrop-filter: saturate(140%) blur(14px);
+    -webkit-backdrop-filter: saturate(140%) blur(14px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  nav.top .shell { display: flex; align-items: center; height: 64px; gap: 20px; }
+  .logo { display: inline-flex; align-items: baseline; font-weight: 700; font-size: 22px; letter-spacing: -0.04em; gap: 2px; text-decoration: none; color: var(--ink); }
+  .logo::after { content: ""; width: 9px; height: 9px; background: var(--lime); display: inline-block; margin-left: 2px; align-self: flex-end; margin-bottom: 4px; }
+  nav.top .spacer { flex: 1; }
+  .back-link { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+  .back-link:hover { color: var(--ink); }
+  .back-link svg { flex-shrink: 0; }
+
+  /* content */
+  .legal-page { padding: 80px 0 120px; }
+  .legal-page .meta-row { display: flex; align-items: center; gap: 16px; margin-bottom: 48px; }
+  .legal-page .pill { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); background: var(--line-soft); padding: 4px 10px; border-radius: 99px; }
+  .legal-page h1 { font-size: clamp(36px, 5vw, 64px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; margin: 0 0 20px; }
+  .legal-page .lead { font-size: 17px; color: var(--ink-2); line-height: 1.65; max-width: 640px; margin: 0 0 64px; }
+  .legal-divider { height: 1px; background: var(--line); margin: 0 0 64px; }
+
+  .legal-body { max-width: 720px; }
+  .legal-body h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; margin: 52px 0 16px; }
+  .legal-body h2:first-child { margin-top: 0; }
+  .legal-body p { font-size: 15px; line-height: 1.75; color: var(--ink-2); margin: 0 0 16px; }
+  .legal-body ul { padding-left: 20px; margin: 0 0 16px; }
+  .legal-body ul li { font-size: 15px; line-height: 1.75; color: var(--ink-2); margin-bottom: 6px; }
+  .legal-body a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
+  .legal-body a:hover { text-decoration-color: var(--ink); }
+  .legal-body .callout { background: var(--line-soft); border-left: 3px solid var(--lime); padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 0 0 16px; }
+  .legal-body .callout p { margin: 0; }
+  .todo { background: #fffbe6; border-left: 3px solid #f5c400; padding: 14px 18px; border-radius: 0 8px 8px 0; font-size: 13px; color: #5a4a00; font-family: var(--font-mono); }
+
+  /* footer */
+  footer { border-top: 1px solid var(--line); padding: 32px 0; }
+  footer .shell { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .footer-logo { font-weight: 700; font-size: 18px; letter-spacing: -0.04em; text-decoration: none; color: var(--ink); }
+  .links { display: flex; gap: 24px; list-style: none; font-size: 13px; color: var(--ink-3); }
+  .links a { text-decoration: none; }
+  .links a:hover { color: var(--ink); }
+  .meta { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); letter-spacing: 0.06em; }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="shell">
+    <a class="logo" href="./">habite</a>
+    <div class="spacer"></div>
+    <a class="back-link" href="./">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M19 12H5M5 12l7 7M5 12l7-7"/></svg>
+      Back
+    </a>
+  </div>
+</nav>
+
+<main class="legal-page">
+  <div class="shell">
+    <div class="meta-row">
+      <span class="pill">Legal</span>
+      <span class="pill">Effective May 18, 2026</span>
+    </div>
+    <h1 class="display">Terms of Service</h1>
+    <p class="lead">These terms govern your use of the Habite app. By downloading or using Habite, you agree to them. If you do not agree, do not use the app.</p>
+    <div class="legal-divider"></div>
+
+    <div class="legal-body">
+
+      <h2>1. About Habite</h2>
+      <p>Habite is a personal eating routine app developed and published by Hella Studios. It is available on iOS and Android. These Terms of Service apply to the Habite mobile application and any related services or websites operated by Hella Studios.</p>
+
+      <h2>2. License</h2>
+      <p>We grant you a personal, non-exclusive, non-transferable, revocable license to use Habite on devices you own or control, for your own personal, non-commercial use. You may not copy, modify, distribute, sell, or lease any part of the app.</p>
+
+      <h2>3. Your Data</h2>
+      <p>All data you create in Habite (food logs, routines, goals) is stored locally on your device. You are responsible for backing up your data. Deleting the app deletes your data permanently. Hella Studios has no access to this data and cannot recover it.</p>
+
+      <h2>4. AI Food Lookup</h2>
+      <p>The Auto feature sends the food name you type to a third-party AI service to retrieve nutritional estimates. This feature is provided for convenience. The nutritional information returned is an estimate and may not be accurate. You should not rely solely on Habite for medical nutrition advice.</p>
+      <p>The AI lookup is powered by <a href="https://www.anthropic.com" target="_blank" rel="noopener">Anthropic</a>. Their use of this data is governed by <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener">Anthropic's privacy policy</a>.</p>
+
+      <h2>5. Health Disclaimer</h2>
+      <p>Habite is a personal productivity tool, not a medical device or health service. It is not a substitute for advice from a qualified healthcare professional. Calorie and macro data in the app are estimates. Always consult a doctor or registered dietitian before making significant changes to your diet, particularly if you have a medical condition.</p>
+
+      <h2>6. Subscriptions and Purchases</h2>
+      <p>Habite offers a 14-day free trial. After the trial period ends, continued use requires one of the following plans:</p>
+      <ul>
+        <li><strong>Monthly</strong> — $2.99 per month</li>
+        <li><strong>Yearly</strong> — $24.99 per year</li>
+        <li><strong>Lifetime</strong> — $39.99 one-time purchase</li>
+      </ul>
+      <p>Subscriptions are processed and billed by Apple (App Store) or Google (Google Play) depending on where you downloaded the app. You can manage, pause, or cancel your subscription at any time through your device's subscription settings. Cancellation takes effect at the end of the current billing period. Lifetime purchases are non-refundable except as required by applicable law or platform policy.</p>
+
+      <h2>7. Acceptable Use</h2>
+      <p>You agree not to use Habite in any way that:</p>
+      <ul>
+        <li>Violates any applicable law or regulation</li>
+        <li>Attempts to reverse engineer, decompile, or extract the source code of the app</li>
+        <li>Interferes with or disrupts the AI lookup service or any other third-party service the app connects to</li>
+      </ul>
+
+      <h2>8. Intellectual Property</h2>
+      <p>Habite, its name, logo, and all related content are owned by Hella Studios and protected by applicable intellectual property laws. Nothing in these terms transfers any ownership to you.</p>
+
+      <h2>9. Disclaimer of Warranties</h2>
+      <p>Habite is provided "as is" without warranties of any kind, express or implied. We do not warrant that the app will be error-free, uninterrupted, or that nutritional data will be accurate. Your use of the app is at your own risk.</p>
+
+      <h2>10. Limitation of Liability</h2>
+      <p>To the maximum extent permitted by law, Hella Studios will not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of Habite, including loss of data.</p>
+
+      <h2>11. Governing Law</h2>
+      <p>These terms are governed by the laws of the State of Washington, USA, without regard to its conflict of law provisions. Any disputes arising under these terms will be subject to the exclusive jurisdiction of the courts located in Washington state.</p>
+
+      <h2>12. Changes to These Terms</h2>
+      <p>We may update these terms from time to time. When we do, we will update the effective date above. Continued use of Habite after changes are posted constitutes acceptance of the updated terms.</p>
+
+      <h2>13. Contact</h2>
+      <p>Questions about these terms? Email us at <a href="mailto:help@hellastudios.games">help@hellastudios.games</a>.</p>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="shell row">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <a class="footer-logo" href="./">habite</a>
+      <span class="meta">/ Habit OS for eating</span>
+    </div>
+    <ul class="links">
+      <li><a href="privacy.html">Privacy</a></li>
+      <li><a href="terms.html">Terms</a></li>
+      <li><a href="./" id="supportLink">Support</a></li>
+    </ul>
+    <span class="meta">&copy; 2026 Hella Studios</span>
+  </div>
+</footer>
+
+</body>
+</html>
