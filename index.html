@@ -7,39 +7,86 @@
 <link rel="stylesheet" href="styles.css">
 <style>
   :root {
-    --bg: #0e0e0c;
-    --bg-2: #141410;
-    --bg-3: #1c1c18;
-    --fg: #f5f3ee;
-    --fg-2: rgba(245,243,238,.62);
-    --fg-3: rgba(245,243,238,.3);
-    --border: rgba(245,243,238,.1);
-    --border-soft: rgba(245,243,238,.06);
-    --lime: #C5FF00;
+    --bg:          #f5f3ee;
+    --bg-2:        #f0eee9;
+    --bg-3:        #e8e5de;
+    --fg:          #14130f;
+    --fg-2:        rgba(20,19,15,.55);
+    --fg-3:        rgba(20,19,15,.32);
+    --border:      rgba(20,19,15,.1);
+    --border-soft: rgba(20,19,15,.06);
+    --lime:        #C5FF00;
   }
 
   body { background: var(--bg); color: var(--fg); font-family: var(--font-sans); }
-  ::selection { background: var(--lime); color: #0e0e0c; }
+  ::selection { background: var(--lime); color: #14130f; }
 
   /* ── nav ── */
   nav {
     position: sticky; top: 0; z-index: 50;
-    background: rgba(14,14,12,.82);
+    background: rgba(245,243,238,.88);
     backdrop-filter: blur(14px) saturate(130%);
     -webkit-backdrop-filter: blur(14px) saturate(130%);
     border-bottom: 1px solid var(--border-soft);
   }
-  nav .inner {
-    display: flex; align-items: center; height: 64px; gap: 8px;
-  }
+  nav .inner { display: flex; align-items: center; height: 64px; gap: 8px; }
   .nav-logo { display: inline-flex; align-items: center; flex-shrink: 0; }
-  nav ul {
-    display: flex; gap: 24px; margin-left: 16px;
-    font-size: 14px; color: var(--fg-2);
-  }
-  nav ul a { transition: color .15s; }
-  nav ul a:hover { color: var(--fg); }
+  .nav-logo img { filter: invert(1); }
   nav .spacer { flex: 1; }
+  .nav-contact {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--fg); padding: 8px 16px; border-radius: 999px;
+    font-family: var(--font-sans); font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: background 0.15s, border-color 0.15s;
+  }
+  .nav-contact:hover { background: var(--bg-3); border-color: rgba(20,19,15,.2); }
+
+  /* ── contact modal ── */
+  .modal-backdrop {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(20,19,15,0.4);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+  .modal {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 20px; width: 100%; max-width: 480px;
+    box-shadow: 0 24px 64px -12px rgba(0,0,0,0.14), 0 8px 24px -8px rgba(0,0,0,0.08);
+    transform: translateY(8px); transition: transform 0.2s;
+  }
+  .modal-backdrop.open .modal { transform: translateY(0); }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 24px 28px 0; }
+  .modal-header h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; margin: 0; color: var(--fg); }
+  .modal-close {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent; border: 0; cursor: pointer;
+    color: var(--fg-3); transition: background 0.15s, color 0.15s;
+  }
+  .modal-close:hover { background: var(--bg-3); color: var(--fg); }
+  .modal form { padding: 20px 28px 28px; display: flex; flex-direction: column; gap: 16px; }
+  .form-field { display: flex; flex-direction: column; gap: 6px; }
+  .form-field label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-2); }
+  .form-field input, .form-field select, .form-field textarea {
+    font-family: var(--font-sans); font-size: 15px; color: var(--fg);
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 10px; padding: 11px 14px; outline: none; width: 100%;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
+    border-color: var(--fg); box-shadow: 0 0 0 3px rgba(20,19,15,0.08);
+  }
+  .form-field textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
+  .form-field select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5l3 3 3-3' stroke='%23807c73' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
+  .modal-submit {
+    background: var(--fg); color: var(--bg);
+    border: 0; border-radius: 10px; padding: 13px 20px;
+    font-family: var(--font-sans); font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: background 0.15s, transform 0.15s; margin-top: 4px;
+  }
+  .modal-submit:hover { background: #000; transform: translateY(-1px); }
 
   /* ── hero ── */
   .hero {
@@ -174,7 +221,7 @@
     display: flex; align-items: center; justify-content: space-between;
     flex-wrap: wrap; gap: 16px;
   }
-  .footer-logo { display: block; }
+  .footer-logo { display: block; filter: invert(1); }
   .footer-copy {
     font-family: var(--font-mono);
     font-size: 11px; color: var(--fg-3); letter-spacing: .06em; text-transform: uppercase;
@@ -186,26 +233,23 @@
 <nav>
   <div class="shell inner">
     <a href="#" class="nav-logo"><img src="assets/hella-studios-logo-horizontal.svg" alt="Hella Studios" height="22"></a>
-    <ul>
-      <li><a href="habite/">Habite</a></li>
-      <li><a href="blade-blitz/">Blade Blitz</a></li>
-    </ul>
     <span class="spacer"></span>
+    <button class="nav-contact" id="contactBtn">Contact Us</button>
   </div>
 </nav>
 
 <section class="hero">
   <div class="shell">
-    <div class="eyebrow">Independent Game &amp; App Studio</div>
-    <h1>Small games and useful apps built with care.</h1>
-    <p class="sub">Hella Studios creates playful games and practical apps designed around simple routines and enjoyable experiences.</p>
-    <a href="#projects" class="btn-primary">Explore Projects</a>
+    <div class="eyebrow">Seattle, WA &middot; Est. 2024</div>
+    <h1>Independent games and apps, made with intention.</h1>
+    <p class="sub">Hella Studios is a one-person studio in Seattle. Each project starts with a simple question: why doesn't this exist yet? The goal is always the same: something worth your time.</p>
+    <a href="#projects" class="btn-primary">See the Work</a>
   </div>
 </section>
 
 <section class="projects" id="projects">
   <div class="shell">
-    <div class="section-label">Our work</div>
+    <div class="section-label">What I've made</div>
     <div class="projects-grid">
 
       <a href="habite/" class="project-card card-habite">
@@ -231,5 +275,73 @@
   </div>
 </footer>
 
+<!-- contact modal -->
+<div class="modal-backdrop" id="contactBackdrop" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="contactModalTitle">Contact Us</h3>
+      <button class="modal-close" id="contactModalClose" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 2l10 10M12 2L2 12"/></svg>
+      </button>
+    </div>
+    <form id="contactForm" novalidate>
+      <div class="form-field">
+        <label for="contactName">Name</label>
+        <input type="text" id="contactName" name="name" placeholder="Your name" required>
+      </div>
+      <div class="form-field">
+        <label for="contactEmail">Email</label>
+        <input type="email" id="contactEmail" name="email" placeholder="you@example.com" required>
+      </div>
+      <div class="form-field">
+        <label for="contactReason">Reason</label>
+        <select id="contactReason" name="reason" required>
+          <option value="" disabled selected>Select a reason...</option>
+          <option value="General inquiry">General inquiry</option>
+          <option value="Press & media">Press &amp; media</option>
+          <option value="Partnership">Partnership</option>
+          <option value="Bug report">Bug report</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="contactMessage">Message</label>
+        <textarea id="contactMessage" name="message" placeholder="What's on your mind?" required></textarea>
+      </div>
+      <button type="submit" class="modal-submit">Send Message</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  (() => {
+    const backdrop = document.getElementById('contactBackdrop');
+    const btn      = document.getElementById('contactBtn');
+    const closeBtn = document.getElementById('contactModalClose');
+    const form     = document.getElementById('contactForm');
+
+    const open  = () => { backdrop.classList.add('open'); document.body.style.overflow = 'hidden'; };
+    const close = () => { backdrop.classList.remove('open'); document.body.style.overflow = ''; };
+
+    btn.addEventListener('click', open);
+    closeBtn.addEventListener('click', close);
+    backdrop.addEventListener('click', e => { if (e.target === backdrop) close(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && backdrop.classList.contains('open')) close(); });
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const name    = document.getElementById('contactName').value.trim();
+      const email   = document.getElementById('contactEmail').value.trim();
+      const reason  = document.getElementById('contactReason').value;
+      const message = document.getElementById('contactMessage').value.trim();
+      if (!name || !email || !reason || !message) return;
+      const subject = encodeURIComponent('Hella Studios: ' + reason);
+      const body    = encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\nReason: ' + reason + '\n\n' + message);
+      window.location.href = 'mailto:hello@hellastudios.games?subject=' + subject + '&body=' + body;
+      close();
+      form.reset();
+    });
+  })();
+</script>
 </body>
 </html>
