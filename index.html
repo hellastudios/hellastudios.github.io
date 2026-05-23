@@ -92,7 +92,20 @@
   .hero {
     padding: clamp(88px,10vw,144px) 0 clamp(80px,8vw,120px);
     position: relative; overflow: hidden;
+    min-height: 72vh;
   }
+  .hero .shell { position: relative; z-index: 2; text-align: center; }
+  .hero h1 { margin-left: auto; margin-right: auto; }
+  .hero .sub { margin-left: auto; margin-right: auto; }
+  .hero-char {
+    position: absolute; bottom: 0;
+    height: clamp(220px, 30vw, 420px); width: auto;
+    pointer-events: none; user-select: none;
+    z-index: 1; will-change: transform;
+  }
+  .hero-bird { left: clamp(-32px, 2vw, 48px); }
+  .hero-seal { right: clamp(-32px, 2vw, 48px); }
+  @media (max-width: 600px) { .hero-char { height: 140px; } }
   .hero::before {
     content: "";
     position: absolute; top: -20%; left: 50%;
@@ -239,6 +252,8 @@
 </nav>
 
 <section class="hero">
+  <img src="assets/hella-studios-hero-bird.png" class="hero-char hero-bird" alt="" aria-hidden="true">
+  <img src="assets/hella-studios-hero-seal.png" class="hero-char hero-seal" alt="" aria-hidden="true">
   <div class="shell">
     <div class="eyebrow">Seattle, WA &middot; Est. 2024</div>
     <h1>Independent games and apps, made with intention.</h1>
@@ -314,6 +329,26 @@
 </div>
 
 <script>
+  // parallax
+  (() => {
+    const bird = document.querySelector('.hero-bird');
+    const seal = document.querySelector('.hero-seal');
+    const hero = document.querySelector('.hero');
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        if (y <= hero.offsetHeight) {
+          bird.style.transform = `translateY(${y * 0.28}px)`;
+          seal.style.transform = `translateY(${y * 0.22}px)`;
+        }
+        ticking = false;
+      });
+    }, { passive: true });
+  })();
+
   (() => {
     const backdrop = document.getElementById('contactBackdrop');
     const btn      = document.getElementById('contactBtn');
