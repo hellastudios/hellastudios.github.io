@@ -32,15 +32,7 @@
   nav .inner {
     display: flex; align-items: center; height: 64px; gap: 8px;
   }
-  .nav-logo {
-    font-weight: 700; font-size: 20px; letter-spacing: -0.03em;
-    display: inline-flex; align-items: baseline; gap: 2px;
-    flex-shrink: 0;
-  }
-  .nav-logo .dot {
-    width: 7px; height: 7px; background: var(--lime);
-    display: inline-block; margin-bottom: 3px; flex-shrink: 0;
-  }
+  .nav-logo { display: inline-flex; align-items: center; flex-shrink: 0; }
   nav ul {
     display: flex; gap: 24px; margin-left: 16px;
     font-size: 14px; color: var(--fg-2);
@@ -114,78 +106,64 @@
 
   .project-card {
     border-radius: 20px; padding: 40px 40px 36px;
-    min-height: 420px; display: flex; flex-direction: column;
+    aspect-ratio: 2 / 1; display: flex; flex-direction: column; justify-content: flex-end;
     position: relative; overflow: hidden;
-    transition: transform .22s;
+    transition: transform .28s;
   }
   .project-card:hover { transform: translateY(-3px); }
-  @media (max-width: 480px) { .project-card { padding: 28px; min-height: 340px; } }
+  @media (max-width: 480px) { .project-card { padding: 28px; } }
+
+  /* shared card styles */
+  .card-logo { display: block; margin-bottom: 18px; transition: transform .28s, opacity .28s; }
+  .card-tag {
+    font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+    color: rgba(255,255,255,.5); margin-bottom: 16px;
+    opacity: 0; transform: translateY(8px); transition: opacity .28s, transform .28s;
+  }
+  .card-desc {
+    font-size: 17px; color: rgba(255,255,255,.75); line-height: 1.55;
+    max-width: 36ch; margin-bottom: 24px;
+    opacity: 0; transform: translateY(8px); transition: opacity .28s .04s, transform .28s .04s;
+  }
+  .card-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #fff; color: #0e0e0c;
+    padding: 12px 22px; border-radius: 999px;
+    font-size: 14px; font-weight: 700; align-self: flex-start;
+    opacity: 0; transform: translateY(8px); transition: opacity .28s .08s, transform .28s .08s, background .15s;
+  }
+  .project-card:hover .card-tag,
+  .project-card:hover .card-desc,
+  .project-card:hover .card-cta { opacity: 1; transform: translateY(0); }
+  .project-card:hover .card-cta:hover { background: rgba(255,255,255,0.85); }
+  .project-card:hover::before { background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.75) 50%, rgba(0,0,0,0.5) 100%); }
 
   /* Habite card */
   .card-habite {
-    background: #f0eee9; color: #14130f;
-    border: 1px solid #d9d6cf;
+    background-image: url('assets/habite/habite-thumbnail.png');
+    background-size: cover; background-position: center;
+    color: #fff; border: none;
   }
-  .habite-tag {
-    font-family: var(--font-mono);
-    font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
-    color: #807c73; margin-bottom: 28px;
+  .card-habite::before {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 100%);
+    transition: background .28s;
+    pointer-events: none;
   }
-  .habite-wordmark {
-    font-size: 34px; font-weight: 700; letter-spacing: -0.04em;
-    display: inline-flex; align-items: baseline; gap: 2px;
-    margin-bottom: 18px; color: #14130f; line-height: 1;
-  }
-  .habite-wordmark .sq {
-    width: 10px; height: 10px; background: #C5FF00;
-    margin-left: 2px; margin-bottom: 5px; flex-shrink: 0;
-  }
-  .card-habite .card-desc {
-    font-size: 17px; color: #44423d; line-height: 1.55;
-    max-width: 36ch; flex: 1; margin-bottom: 36px;
-  }
-  .card-habite .card-cta {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: #0e0e0c; color: #f5f3ee;
-    padding: 12px 22px; border-radius: 999px;
-    font-size: 14px; font-weight: 600; align-self: flex-start;
-    transition: background .15s, transform .15s;
-  }
-  .card-habite:hover .card-cta { background: #000; }
 
   /* Blade Blitz card */
   .card-bb {
-    background: #0e0818; color: #fff;
-    border: 1px solid rgba(255,255,255,.08);
+    background-image: url('assets/blade-blitz/blade-blitz-thumbnail.png');
+    background-size: cover; background-position: center;
+    color: #fff; border: none;
   }
   .card-bb::before {
-    content: "";
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 80% 10%, rgba(255,214,10,.12), transparent 60%);
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 100%);
+    transition: background .28s;
     pointer-events: none;
   }
-  .bb-tag {
-    font-family: var(--font-mono);
-    font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
-    color: rgba(255,255,255,.35); margin-bottom: 28px;
-  }
-  .bb-wordmark {
-    font-size: 34px; font-weight: 700; letter-spacing: -0.03em;
-    text-transform: uppercase; color: #FFD60A;
-    margin-bottom: 18px; line-height: 1.05;
-  }
-  .card-bb .card-desc {
-    font-size: 17px; color: rgba(255,255,255,.62); line-height: 1.55;
-    max-width: 36ch; flex: 1; margin-bottom: 36px;
-  }
-  .card-bb .card-cta {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: #FFD60A; color: #0e0818;
-    padding: 12px 22px; border-radius: 999px;
-    font-size: 14px; font-weight: 700; align-self: flex-start;
-    transition: background .15s, transform .15s;
-  }
-  .card-bb:hover .card-cta { background: #ffe033; }
 
   /* ── footer ── */
   footer {
@@ -196,11 +174,7 @@
     display: flex; align-items: center; justify-content: space-between;
     flex-wrap: wrap; gap: 16px;
   }
-  .footer-logo {
-    font-weight: 700; font-size: 16px; letter-spacing: -0.02em;
-    display: inline-flex; align-items: baseline; gap: 2px;
-  }
-  .footer-logo .dot { width: 6px; height: 6px; background: var(--lime); display: inline-block; margin-bottom: 2px; }
+  .footer-logo { display: block; }
   .footer-copy {
     font-family: var(--font-mono);
     font-size: 11px; color: var(--fg-3); letter-spacing: .06em; text-transform: uppercase;
@@ -211,7 +185,7 @@
 
 <nav>
   <div class="shell inner">
-    <a href="#" class="nav-logo">Hella Studios<span class="dot"></span></a>
+    <a href="#" class="nav-logo"><img src="assets/hella-studios-logo-horizontal.svg" alt="Hella Studios" height="22"></a>
     <ul>
       <li><a href="habite/">Habite</a></li>
       <li><a href="blade-blitz/">Blade Blitz</a></li>
@@ -235,15 +209,13 @@
     <div class="projects-grid">
 
       <a href="habite/" class="project-card card-habite">
-        <div class="habite-tag">Mobile App &middot; iOS &amp; Android</div>
-        <div class="habite-wordmark">habite<span class="sq"></span></div>
+        <div class="card-tag">Mobile App &middot; iOS &amp; Android</div>
         <p class="card-desc">Plan your meals before the day starts and build consistent eating habits.</p>
         <span class="card-cta">View Habite</span>
       </a>
 
       <a href="blade-blitz/" class="project-card card-bb">
-        <div class="bb-tag">PC Game &middot; Steam</div>
-        <div class="bb-wordmark">Blade<br>Blitz</div>
+        <div class="card-tag">PC Game &middot; Steam</div>
         <p class="card-desc">Fast local multiplayer sword fights with a charming cartoon cast.</p>
         <span class="card-cta">View Blade Blitz</span>
       </a>
@@ -254,7 +226,7 @@
 
 <footer>
   <div class="shell inner">
-    <div class="footer-logo">Hella Studios<span class="dot"></span></div>
+    <img src="assets/hella-studios-logo-horizontal.svg" alt="Hella Studios" height="20" class="footer-logo">
     <div class="footer-copy">&copy; 2026 Hella Studios. All rights reserved.</div>
   </div>
 </footer>
