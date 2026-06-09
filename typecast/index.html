@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="canonical" href="https://hellastudios.games/typecast/">
+<title>Typecast — Draft tropes. Bet on movies. Win the night.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  /* ── design tokens ── */
+  :root {
+    --paper:          #0e0e0b;
+    --paper-2:        #141411;
+    --ink:            #e8e4d4;
+    --ink-2:          rgba(232,228,212,0.62);
+    --ink-3:          rgba(232,228,212,0.38);
+    --line:           rgba(232,228,212,0.10);
+    --line-soft:      rgba(232,228,212,0.06);
+    --slab:           #e8e4d4;
+    --slab-2:         #f0ecdE;
+    --slab-3:         #faf7ee;
+    --slab-line:      rgba(14,14,11,0.12);
+    --slab-line-2:    rgba(14,14,11,0.07);
+    --slab-ink:       #14130f;
+    --slab-ink-2:     rgba(20,19,15,0.52);
+    --tangerine:      #E8622A;
+    --tangerine-dim:  #c45520;
+    --cherry:         #CC3B30;
+    --gold:           #C9A84C;
+    --teal:           #2BA89A;
+    --azure:          #4B80CC;
+  }
+
+  body { background: var(--paper); color: var(--ink); font-family: var(--font-sans); font-feature-settings: "ss01","cv11"; }
+  ::selection { background: var(--tangerine); color: #fff; }
+  a { color: inherit; }
+  button { font-family: inherit; }
+
+  /* ── grade stripe ── */
+  .grade-stripe {
+    height: 4px;
+    background: linear-gradient(to right, var(--cherry) 0%, var(--tangerine) 28%, var(--gold) 50%, var(--teal) 74%, var(--azure) 100%);
+  }
+
+  /* ── shared ── */
+  .eyebrow {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-2);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .eyebrow::before { content: ""; width: 6px; height: 6px; background: var(--tangerine); display: inline-block; }
+  .section-num { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; color: var(--ink-3); text-transform: uppercase; }
+  .display { font-weight: 600; letter-spacing: -0.035em; line-height: 1.02; text-wrap: balance; }
+  .section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; margin-bottom: 56px; flex-wrap: wrap; }
+  .section-head h2 { margin: 12px 0 0; font-size: clamp(36px, 4.4vw, 60px); }
+  .section-head .right-meta { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; text-align: right; line-height: 1.6; }
+
+  /* ── nav ── */
+  nav.top {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(14,14,11,0.88);
+    backdrop-filter: saturate(140%) blur(14px);
+    -webkit-backdrop-filter: saturate(140%) blur(14px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  nav.top .shell { display: flex; align-items: center; height: 64px; gap: 32px; }
+
+  .brand-row { display: flex; align-items: center; gap: 14px; position: relative; }
+  .parent {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 6px 9px 6px 8px; border-radius: 8px;
+    cursor: pointer; background: transparent; border: 0;
+    transition: background 0.15s; font-family: var(--font-sans);
+  }
+  .parent:hover, .parent[aria-expanded="true"] { background: rgba(232,228,212,0.08); }
+  .parent .mark { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: var(--slab); flex-shrink: 0; }
+  .parent .mark svg { display: block; }
+  .parent .name { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); font-weight: 500; }
+  .parent .chev { color: var(--ink-3); margin-left: -2px; transition: transform 0.18s; }
+  .parent[aria-expanded="true"] .chev { transform: rotate(180deg); color: var(--ink); }
+  .brand-slash { color: rgba(232,228,212,0.2); font-size: 22px; font-weight: 300; user-select: none; transform: translateY(-1px); }
+  .logo { display: inline-flex; align-items: center; }
+  .logo-text { font-family: 'Anton', var(--font-sans); font-size: 18px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink); font-weight: 400; }
+
+  .switcher {
+    position: absolute; top: calc(100% + 8px); left: 0;
+    width: 300px; background: #1e1e1b; border: 1px solid var(--line);
+    border-radius: 14px; padding: 8px;
+    box-shadow: 0 12px 40px -8px rgba(0,0,0,0.5), 0 4px 12px -4px rgba(0,0,0,0.3);
+    opacity: 0; transform: translateY(-4px); pointer-events: none;
+    transition: opacity 0.16s, transform 0.16s; z-index: 60;
+  }
+  .switcher.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .switcher .group-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); padding: 10px 12px 6px; }
+  .switcher .item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 9px; cursor: pointer; text-decoration: none; color: var(--ink); transition: background 0.12s; }
+  .switcher .item:hover { background: rgba(232,228,212,0.06); }
+  .switcher .item .tile { width: 32px; height: 32px; border-radius: 8px; background: var(--paper-2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--tangerine); font-family: var(--font-mono); font-weight: 700; font-size: 14px; letter-spacing: -0.04em; }
+  .switcher .item .body { flex: 1; min-width: 0; }
+  .switcher .item .body .nm { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; display: flex; align-items: center; gap: 6px; }
+  .switcher .item .body .nm .badge-curr { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em; color: #fff; background: var(--tangerine); padding: 1px 5px; border-radius: 3px; text-transform: uppercase; font-weight: 500; }
+  .switcher .item .body .desc { font-size: 12px; color: var(--ink-2); line-height: 1.3; margin-top: 2px; }
+  .switcher .item .check { color: var(--ink-3); flex-shrink: 0; opacity: 0; }
+  .switcher .item[aria-current="true"] .check { opacity: 1; color: var(--ink); }
+  .switcher .item .arrow { color: var(--ink-3); flex-shrink: 0; }
+  .switcher .divider { height: 1px; background: var(--line-soft); margin: 6px 4px; }
+  .switcher .footer-link { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px 8px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); cursor: pointer; text-decoration: none; border-radius: 8px; }
+  .switcher .footer-link:hover { color: var(--ink); }
+  .switcher .footer-link svg { transition: transform 0.16s; }
+  .switcher .footer-link:hover svg { transform: translateX(2px); }
+
+  nav.top ul { display: flex; gap: 28px; list-style: none; font-size: 14px; color: var(--ink-2); }
+  nav.top ul a:hover { color: var(--ink); }
+  nav.top .spacer { flex: 1; }
+  nav.top .cta { background: var(--tangerine); color: #fff; padding: 10px 16px; border-radius: 999px; font-size: 13px; font-weight: 500; border: 0; cursor: pointer; transition: transform 0.18s, background 0.18s; }
+  nav.top .cta:hover { background: var(--tangerine-dim); transform: translateY(-1px); }
+
+  @media (max-width: 760px) {
+    nav.top ul { display: none; }
+    .parent .name { display: none; }
+    .parent { padding: 6px; }
+    .switcher { width: 260px; }
+  }
+
+  /* ── hero ── */
+  .hero { padding: 80px 0 96px; position: relative; }
+  .hero .grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 64px; align-items: center; }
+  .hero h1 { font-family: 'Anton', var(--font-sans); font-size: clamp(52px, 6.8vw, 100px); margin: 24px 0 24px; font-weight: 400; letter-spacing: 0.01em; line-height: 0.95; text-transform: uppercase; }
+  .hero h1 .accent { color: var(--tangerine); }
+  .hero .sub { font-size: clamp(16px, 1.3vw, 19px); line-height: 1.5; color: var(--ink-2); max-width: 560px; margin: 0 0 36px; }
+  .ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+  .store-btn {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--paper-2); color: var(--ink);
+    padding: 14px 22px 14px 18px; border-radius: 12px; border: 1px solid var(--line);
+    cursor: pointer; transition: transform 0.18s, background 0.18s, border-color 0.18s; text-align: left;
+  }
+  .store-btn:hover { background: #1e1e1b; border-color: rgba(232,228,212,0.2); transform: translateY(-1px); }
+  .store-btn .icon { width: 28px; height: 28px; flex-shrink: 0; object-fit: contain; filter: brightness(0) invert(1); }
+  .store-btn .label .top { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); line-height: 1.1; }
+  .store-btn .label .name { font-family: var(--font-sans); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.15; margin-top: 2px; }
+  .hero .below-cta { margin-top: 16px; font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); letter-spacing: 0.02em; display: inline-flex; align-items: center; gap: 8px; }
+  .hero .below-cta .dot { color: var(--tangerine); }
+
+  /* phone mockup */
+  .phone-stage { position: relative; display: flex; justify-content: center; }
+  .phone-stage::before { content: ""; position: absolute; inset: 8% -10% -8% -10%; background: radial-gradient(60% 60% at 50% 60%, rgba(232,98,42,0.14), transparent 65%); z-index: 0; filter: blur(20px); }
+  .phone { position: relative; z-index: 1; width: 320px; aspect-ratio: 320/660; background: #0a0a08; border-radius: 46px; padding: 12px; box-shadow: 0 1px 0 1px #1e1e1b inset, 0 0 0 1.5px rgba(255,255,255,.04) inset, 0 30px 80px -20px rgba(0,0,0,0.6), 0 12px 30px -10px rgba(0,0,0,.4); }
+  .phone .screen { background: #111110; width: 100%; height: 100%; border-radius: 34px; overflow: hidden; position: relative; color: var(--ink); font-family: var(--font-sans); display: flex; flex-direction: column; }
+  .phone .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 28px; background: #000; border-radius: 16px; z-index: 5; }
+  .phone .status-bar { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px 0; font-weight: 600; font-size: 14px; color: var(--ink); }
+  .phone .status-bar .right { display: inline-flex; gap: 6px; align-items: center; opacity: 0.8; }
+
+  /* ticket card inside phone */
+  .ticket-card {
+    margin: 20px 14px 10px;
+    background: #e8e4d4;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .ticket-card .accent-strip { height: 5px; background: linear-gradient(to right, var(--cherry), var(--tangerine), var(--gold), var(--teal), var(--azure)); }
+  .ticket-card .tc-body { padding: 10px 12px 12px; }
+  .ticket-card .tc-label { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(20,19,15,0.5); display: flex; justify-content: space-between; }
+  .ticket-card .tc-title { font-family: 'Anton', var(--font-sans); font-size: 20px; font-weight: 400; text-transform: uppercase; color: #14130f; line-height: 1; margin: 4px 0 8px; letter-spacing: 0.02em; }
+  .ticket-card .tc-meta { display: flex; gap: 12px; }
+  .ticket-card .tc-meta .m { }
+  .ticket-card .tc-meta .mk { font-family: var(--font-mono); font-size: 7.5px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(20,19,15,0.45); }
+  .ticket-card .tc-meta .mv { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: #14130f; letter-spacing: 0.04em; margin-top: 1px; }
+  .ticket-perf { display: flex; align-items: center; gap: 6px; padding: 0 12px; margin: 4px 0; }
+  .ticket-perf .hole { width: 10px; height: 10px; background: #111110; border-radius: 50%; flex-shrink: 0; }
+  .ticket-perf .dash { flex: 1; border-top: 1.5px dashed rgba(20,19,15,0.2); }
+
+  /* trope list inside phone */
+  .phone .trope-list { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+  .trope-row { background: #1a1917; border-radius: 10px; padding: 9px 12px; display: flex; align-items: center; gap: 10px; }
+  .trope-row .tab { width: 4px; height: 100%; min-height: 28px; border-radius: 2px; flex-shrink: 0; }
+  .trope-row .tr-text { flex: 1; font-size: 11px; font-weight: 500; color: var(--ink); line-height: 1.2; }
+  .trope-row .tr-pts { font-family: var(--font-mono); font-size: 10px; color: var(--ink-2); letter-spacing: 0.06em; }
+  .trope-row.hit .tr-pts { color: var(--gold); }
+
+  .phone .tabbar { margin-top: auto; padding: 10px 24px 18px; display: flex; justify-content: space-between; border-top: 1px solid rgba(232,228,212,0.06); }
+  .phone .tabbar .tab-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(232,228,212,0.3); flex: 1; }
+  .phone .tabbar .tab-item.active { color: var(--tangerine); }
+
+  .floater { position: absolute; background: #1e1e1b; color: var(--ink); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; z-index: 2; box-shadow: 0 14px 32px -10px rgba(0,0,0,0.4); }
+  .floater .v { font-family: var(--font-sans); font-weight: 600; font-size: 20px; color: var(--tangerine); letter-spacing: -0.02em; margin-top: 4px; display: block; }
+  .floater.players { top: 10%; left: -4%; }
+  .floater.score { bottom: 16%; right: -4%; }
+
+  @media (max-width: 960px) { .hero .grid { grid-template-columns: 1fr; gap: 48px; } .phone-stage { order: 2; } .floater { display: none; } }
+  @media (max-width: 480px) { .phone { width: 280px; } }
+
+  /* ── problem ── */
+  .problem { padding: 96px 0 64px; border-top: 1px solid var(--line-soft); }
+  .problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .problem-card { background: var(--paper-2); border: 1px solid var(--line); border-radius: 16px; padding: 28px 26px 32px; position: relative; transition: transform 0.2s, border-color 0.2s; }
+  .problem-card:hover { transform: translateY(-2px); border-color: rgba(232,228,212,0.22); }
+  .problem-card .idx { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); letter-spacing: 0.12em; }
+  .problem-card .ico { width: 56px; height: 56px; margin: 18px 0 22px; color: var(--ink); opacity: 0.7; }
+  .problem-card h3 { margin: 0 0 10px; font-size: 22px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; }
+  .problem-card p { margin: 0; font-size: 14.5px; color: var(--ink-2); line-height: 1.55; }
+  @media (max-width: 800px) { .problem-grid { grid-template-columns: 1fr; } }
+
+  /* ── solution ── */
+  .solution { padding: 96px 0; border-top: 1px solid var(--line-soft); }
+  .steps { display: flex; flex-direction: column; }
+  .step { display: grid; grid-template-columns: 48px 1fr; gap: 32px; padding: 32px 0; border-bottom: 1px solid var(--line-soft); align-items: baseline; }
+  .step:first-child { padding-top: 8px; }
+  .step .step-num { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; color: var(--tangerine); padding-top: 4px; }
+  .step h3 { margin: 0 0 8px; font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+  .step p { margin: 0; font-size: 15px; color: var(--ink-2); line-height: 1.6; max-width: 64ch; }
+  @media (max-width: 600px) { .step { grid-template-columns: 32px 1fr; gap: 16px; } }
+
+  @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.7); } }
+
+  /* ── features ── */
+  .features { padding: 96px 0; border-top: 1px solid var(--line-soft); background: var(--paper-2); }
+  .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+  .feature { background: var(--paper-2); padding: 28px 24px 32px; display: flex; flex-direction: column; min-height: 200px; transition: background 0.2s; }
+  .feature:hover { background: #1a1917; }
+  .feature .ico { width: 36px; height: 36px; margin-bottom: 24px; color: var(--ink); display: flex; align-items: center; justify-content: center; }
+  .feature .ico svg { display: block; }
+  .feature h4 { margin: 0 0 6px; font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+  .feature p { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+  .feature .tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; color: var(--ink-3); text-transform: uppercase; margin-top: auto; padding-top: 18px; }
+  @media (max-width: 900px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .features-grid { grid-template-columns: 1fr; } }
+
+  /* ── philosophy (cream/ticket section) ── */
+  .philosophy { background: var(--slab); color: var(--slab-ink); padding: 120px 0; position: relative; overflow: hidden; }
+  .philosophy::before {
+    content: ""; position: absolute; inset: 0;
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(14,14,11,0.06) 59px, rgba(14,14,11,0.06) 60px),
+                      repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(14,14,11,0.06) 59px, rgba(14,14,11,0.06) 60px);
+    pointer-events: none;
+  }
+  .philosophy .shell { position: relative; }
+  .philosophy .section-head .eyebrow { color: var(--slab-ink-2); }
+  .philosophy .section-head .eyebrow::before { background: var(--tangerine); }
+  .philosophy .section-head h2 { color: var(--slab-ink); font-size: clamp(40px, 5vw, 72px); max-width: 14ch; }
+  .philosophy .section-head .right-meta { color: var(--slab-ink-2); }
+  .phil-grid { display: grid; grid-template-columns: 1fr 1.05fr; gap: 80px; align-items: center; margin-top: 32px; }
+  .phil-grid .copy p { font-size: 18px; line-height: 1.55; color: var(--slab-ink-2); max-width: 44ch; }
+  .phil-grid .copy p strong { color: var(--slab-ink); font-weight: 500; }
+
+  /* leaderboard card */
+  .leaderboard { background: var(--slab-3); border: 1px solid rgba(14,14,11,0.1); border-radius: 18px; overflow: hidden; }
+  .leaderboard .lb-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 24px 14px; border-bottom: 1px solid rgba(14,14,11,0.08); }
+  .leaderboard .lb-title { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--slab-ink-2); }
+  .leaderboard .lb-live { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; color: var(--cherry); text-transform: uppercase; }
+  .leaderboard .lb-live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--cherry); animation: pulse 1.4s ease-in-out infinite; }
+  .lb-row { display: flex; align-items: center; gap: 14px; padding: 14px 24px; border-bottom: 1px solid rgba(14,14,11,0.06); }
+  .lb-row:last-child { border-bottom: 0; }
+  .lb-row .rank { font-family: var(--font-mono); font-size: 11px; color: var(--slab-ink-2); width: 18px; text-align: center; letter-spacing: 0.06em; }
+  .lb-row .rank.first { color: var(--gold); font-weight: 700; }
+  .lb-row .player { flex: 1; font-size: 15px; font-weight: 500; color: var(--slab-ink); }
+  .lb-row .tropes { font-family: var(--font-mono); font-size: 10px; color: var(--slab-ink-2); letter-spacing: 0.06em; }
+  .lb-row .pts { font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--slab-ink); letter-spacing: 0.02em; min-width: 40px; text-align: right; }
+  .lb-row.leader .pts { color: var(--tangerine); }
+  .lb-perf { padding: 14px 24px; border-top: 1px solid rgba(14,14,11,0.08); display: flex; justify-content: space-between; align-items: center; }
+  .lb-perf .pf-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slab-ink-2); }
+  .lb-perf .pf-val { font-family: var(--font-mono); font-size: 12px; color: var(--slab-ink); font-weight: 600; display: flex; align-items: center; gap: 5px; }
+  .lb-perf .pf-val .up { color: var(--teal); }
+
+  @media (max-width: 900px) { .phil-grid { grid-template-columns: 1fr; gap: 48px; } }
+
+  /* ── final cta ── */
+  .final { padding: 120px 0 64px; text-align: center; border-top: 1px solid var(--line-soft); }
+  .final h2 { font-family: 'Anton', var(--font-sans); font-weight: 400; font-size: clamp(52px, 7.5vw, 116px); margin: 16px auto 24px; max-width: 14ch; text-transform: uppercase; letter-spacing: 0.02em; line-height: 0.95; }
+  .final .sub { font-size: 18px; color: var(--ink-2); max-width: 38ch; margin: 0 auto 40px; line-height: 1.5; }
+  .final .ctas { justify-content: center; }
+  .final .below-cta { display: block; margin-top: 20px; font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); letter-spacing: 0.04em; }
+
+  /* ── footer ── */
+  footer { border-top: 1px solid var(--line-soft); padding: 40px 0 48px; }
+  footer .row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; }
+  footer .meta { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); letter-spacing: 0.06em; text-transform: uppercase; }
+  .footer-logo { display: inline-flex; align-items: center; }
+  footer .links { display: flex; gap: 24px; list-style: none; font-size: 13px; color: var(--ink-2); }
+  footer .links a:hover { color: var(--ink); }
+
+  /* ── support modal ── */
+  .modal-backdrop {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+  .modal {
+    background: #1e1e1b; border: 1px solid var(--line);
+    border-radius: 20px; width: 100%; max-width: 480px;
+    box-shadow: 0 24px 64px -12px rgba(0,0,0,0.6), 0 8px 24px -8px rgba(0,0,0,0.4);
+    transform: translateY(8px);
+    transition: transform 0.2s;
+  }
+  .modal-backdrop.open .modal { transform: translateY(0); }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 24px 28px 0; }
+  .modal-header h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; margin: 0; }
+  .modal-header .modal-close {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent; border: 0; cursor: pointer;
+    color: var(--ink-3); transition: background 0.15s, color 0.15s;
+  }
+  .modal-header .modal-close:hover { background: rgba(232,228,212,0.08); color: var(--ink); }
+  .modal form { padding: 20px 28px 28px; display: flex; flex-direction: column; gap: 16px; }
+  .form-field { display: flex; flex-direction: column; gap: 6px; }
+  .form-field label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); }
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
+    font-family: var(--font-sans); font-size: 15px; color: var(--ink);
+    background: rgba(232,228,212,0.06); border: 1px solid var(--line);
+    border-radius: 10px; padding: 11px 14px;
+    outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+    width: 100%;
+  }
+  .form-field input:focus,
+  .form-field select:focus,
+  .form-field textarea:focus {
+    border-color: var(--tangerine);
+    box-shadow: 0 0 0 3px rgba(232,98,42,0.15);
+  }
+  .form-field textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
+  .form-field select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5l3 3 3-3' stroke='rgba(232,228,212,0.4)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
+  .modal-submit {
+    background: var(--tangerine); color: #fff;
+    border: 0; border-radius: 10px; padding: 13px 20px;
+    font-family: var(--font-sans); font-size: 15px; font-weight: 600;
+    letter-spacing: -0.01em; cursor: pointer;
+    transition: background 0.15s, transform 0.15s;
+    margin-top: 4px;
+  }
+  .modal-submit:hover { background: var(--tangerine-dim); transform: translateY(-1px); }
+</style>
+</head>
+<body>
+
+<!-- grade stripe -->
+<div class="grade-stripe"></div>
+
+<!-- nav -->
+<nav class="top">
+  <div class="shell">
+    <div class="brand-row">
+      <button class="parent" id="parentBtn" aria-expanded="false" aria-haspopup="menu" aria-label="Switch products">
+        <img src="../assets/hellastudios-logo.svg" alt="Hella Studios" height="20" style="filter:brightness(0) invert(1)">
+        <svg class="chev" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4l2.5 2.5L7.5 4"/></svg>
+      </button>
+      <span class="brand-slash" aria-hidden="true">/</span>
+      <a class="logo" href="#" style="display:inline-flex;align-items:center;gap:8px;"><img src="../assets/typecast/typecast-icon.png" alt="Typecast" height="24" style="display:block;"><span class="logo-text">Typecast</span></a>
+
+      <div class="switcher" id="switcher" role="menu" aria-labelledby="parentBtn">
+        <div class="group-label">Products</div>
+        <a class="item" href="../habite/" role="menuitem">
+          <span class="tile" style="padding:0;overflow:hidden;"><img src="../assets/habite/habite-icon.png" alt="" width="32" height="32" style="display:block;object-fit:cover;"></span>
+          <span class="body">
+            <span class="nm">Habite</span>
+            <span class="desc">The meal commitments app</span>
+          </span>
+          <svg class="arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 3l4 4-4 4"/></svg>
+        </a>
+        <a class="item" href="../blade-blitz/" role="menuitem">
+          <span class="tile" style="padding:0;overflow:hidden;"><img src="../assets/blade-blitz/blade-blitz-icon.png" alt="" width="32" height="32" style="display:block;object-fit:cover;"></span>
+          <span class="body">
+            <span class="nm">Blade Blitz</span>
+            <span class="desc">Fast local multiplayer game</span>
+          </span>
+          <svg class="arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 3l4 4-4 4"/></svg>
+        </a>
+        <a class="item" href="#" role="menuitem" aria-current="true">
+          <span class="tile" style="padding:0;overflow:hidden;"><img src="../assets/typecast/typecast-icon.png" alt="" width="32" height="32" style="display:block;object-fit:cover;"></span>
+          <span class="body">
+            <span class="nm">Typecast <span class="badge-curr">Current</span></span>
+            <span class="desc">Movie night made competitive</span>
+          </span>
+          <svg class="check" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5l3 3 5-7"/></svg>
+        </a>
+        <div class="divider"></div>
+        <a class="footer-link" href="../">
+          <span>Visit Hella Studios</span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l5-5M4 3.5h4.5V8"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <span class="spacer"></span>
+    <a href="#download" class="cta">Get the app</a>
+  </div>
+</nav>
+
+<!-- hero -->
+<section class="hero">
+  <div class="shell">
+    <div class="grid">
+      <div>
+        <div class="eyebrow">Movie night, with stakes.</div>
+        <h1>
+          Draft tropes.<br>
+          Make your bets.
+        </h1>
+        <p class="sub">Typecast turns any movie into a game worth watching.</p>
+        <div class="ctas">
+          <button class="store-btn" aria-label="Download on App Store">
+            <img class="icon" src="../assets/icons/apple.svg" alt="">
+            <div class="label">
+              <div class="top">Download on the</div>
+              <div class="name">App Store</div>
+            </div>
+          </button>
+          <button class="store-btn" aria-label="Get it on Google Play">
+            <img class="icon" src="../assets/icons/googleplay.svg" alt="">
+            <div class="label">
+              <div class="top">Get it on</div>
+              <div class="name">Google Play</div>
+            </div>
+          </button>
+        </div>
+        <div class="below-cta"><span class="dot">&#9679;</span> Free to play. No ads.</div>
+      </div>
+
+      <!-- phone mockup -->
+      <div class="phone-stage">
+        <div class="floater players">&#127909; Now playing<span class="v">6 players</span></div>
+        <div class="floater score">&#9660; Your score<span class="v">340 pts</span></div>
+
+        <div class="phone">
+          <div class="screen">
+            <div class="island"></div>
+            <div class="status-bar">
+              <span>9:41</span>
+              <div class="right">
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="3" width="3" height="9" rx="1" opacity=".4"/><rect x="4.5" y="2" width="3" height="10" rx="1" opacity=".6"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="1" width="2" height="10" rx="1" stroke="currentColor" stroke-width="1" fill="none"/></svg>
+              </div>
+            </div>
+            <div class="ticket-card">
+              <div class="accent-strip"></div>
+              <div class="tc-body">
+                <div class="tc-label">
+                  <span>Now Playing</span>
+                  <span style="color:var(--cherry);display:flex;align-items:center;gap:3px;"><span style="width:5px;height:5px;border-radius:50%;background:var(--cherry);display:inline-block;animation:pulse 1.4s ease-in-out infinite;"></span>Live</span>
+                </div>
+                <div class="tc-title">Friday<br>Fright Night</div>
+                <div class="tc-meta">
+                  <div class="m"><div class="mk">Genre</div><div class="mv">Horror</div></div>
+                  <div class="m"><div class="mk">Players</div><div class="mv">6</div></div>
+                  <div class="m"><div class="mk">Round</div><div class="mv">3/5</div></div>
+                </div>
+              </div>
+              <div class="ticket-perf">
+                <div class="hole"></div>
+                <div class="dash"></div>
+                <div class="hole"></div>
+              </div>
+            </div>
+
+            <div class="trope-list">
+              <div class="trope-row hit">
+                <div class="tab" style="background:var(--cherry)"></div>
+                <div class="tr-text">Jump scare in first 10 min</div>
+                <div class="tr-pts">+100</div>
+              </div>
+              <div class="trope-row hit">
+                <div class="tab" style="background:var(--gold)"></div>
+                <div class="tr-text">Character splits from group</div>
+                <div class="tr-pts">+100</div>
+              </div>
+              <div class="trope-row">
+                <div class="tab" style="background:rgba(232,228,212,0.18)"></div>
+                <div class="tr-text">Villain monologue before kill</div>
+                <div class="tr-pts" style="color:var(--ink-3)">+100</div>
+              </div>
+              <div class="trope-row">
+                <div class="tab" style="background:rgba(232,228,212,0.18)"></div>
+                <div class="tr-text">Final girl survives alone</div>
+                <div class="tr-pts" style="color:var(--tangerine);font-weight:700;">×2</div>
+              </div>
+            </div>
+
+            <div class="tabbar">
+              <div class="tab-item active">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="12" height="10" rx="2"/><path d="M2 5h12"/><path d="M5 2v3M11 2v3"/></svg>
+                Draft
+              </div>
+              <div class="tab-item">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 12L6 9l3 3 4-6"/><circle cx="13" cy="6" r="0.5" fill="currentColor"/></svg>
+                Scores
+              </div>
+              <div class="tab-item">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="5"/><path d="M8 5v3l2 2"/></svg>
+                History
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- insight -->
+<section class="problem" id="problem">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <h2 class="display">Some movies are better<br>with skin in the game.</h2>
+      </div>
+    </div>
+
+    <div style="max-width:640px;">
+      <p style="font-size:18px;line-height:1.6;color:var(--ink-2);margin:0 0 20px;">Great movie or guilty pleasure, Typecast makes it worth watching together. Turns out stakes are the best special effect.</p>
+      <p style="font-size:18px;line-height:1.6;color:var(--ink-2);margin:0;">One draft, seven tropes ranked by confidence, a room full of people who suddenly care very much about whether the hero gets a redemption arc.</p>
+    </div>
+  </div>
+</section>
+
+<!-- solution -->
+<section class="solution" id="solution">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">How to play</div>
+        <h2 class="display" style="margin-top:12px;">Simple enough to learn<br>mid-popcorn.</h2>
+      </div>
+    </div>
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">01</div>
+        <div>
+          <h3>Pick a movie, pick a genre</h3>
+          <p>Choose tonight's film and match it to a genre in the app. That unlocks its trope library — every cliché, callback, and cinematic sin it's likely to commit.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">02</div>
+        <div>
+          <h3>Draft your tropes</h3>
+          <p>Players take turns in snake draft order, each claiming tropes they think will actually happen. No two players can hold the same trope. Choose wisely — or at least confidently.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">03</div>
+        <div>
+          <h3>Rank your hand</h3>
+          <p>Order your seven tropes from most to least confident. Your ranking is your bet. The higher a trope sits, the more it's worth when it lands.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">04</div>
+        <div>
+          <h3>Double down, short, or raise</h3>
+          <p>Before the movie starts, make it interesting. Double down on your best trope, short an opponent's pick, or raise the stakes on a trope you believe in. One move each. Choose carefully.</p>
+        </div>
+      </div>
+
+      <div class="step" style="border-bottom:0;">
+        <div class="step-num">05</div>
+        <div>
+          <h3>Watch. Score. Win.</h3>
+          <p>Points land when your tropes hit the screen. Credits roll, scores settle. Most points wins — and the movie made every call.</p>
+        </div>
+      </div>
+
+    </div>
+    <div style="margin-top:40px;padding-top:32px;border-top:1px solid var(--line-soft);display:flex;align-items:center;gap:16px;">
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--tangerine);flex-shrink:0;"></div>
+      <p style="margin:0;font-family:var(--font-mono);font-size:13px;letter-spacing:0.06em;color:var(--ink-2);">The movie is the referee. No one can argue with the screen.</p>
+    </div>
+  </div>
+</section>
+
+<!-- genres -->
+<section class="features" id="features">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <h2 class="display">Eight genres.<br>Hundreds of tropes.</h2>
+      </div>
+    </div>
+    <div class="features-grid">
+
+      <div class="feature">
+        <div class="ico" style="color:var(--cherry)"><svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="18" cy="16" r="9"/><path d="M12 14c0-3.3 2.7-6 6-6"/><path d="M14 28l-2 4M22 28l2 4M14 32h8" stroke-opacity="0.5"/><circle cx="15" cy="15" r="1.5" fill="currentColor"/><circle cx="21" cy="15" r="1.5" fill="currentColor"/></svg></div>
+        <h4 style="color:var(--cherry)">Horror</h4>
+        <p>Jump scare in the first act. Final girl survives alone. The villain cannot be killed.</p>
+      </div>
+
+      <div class="feature">
+        <div class="ico" style="color:var(--azure)"><svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="18" cy="18" r="10"/><ellipse cx="18" cy="18" rx="5" ry="10"/><path d="M8 18h20" stroke-opacity="0.5"/></svg></div>
+        <h4 style="color:var(--azure)">Sci-Fi</h4>
+        <p>First contact goes wrong. The AI turns on its creators. Someone makes the sacrifice play.</p>
+      </div>
+
+      <div class="feature">
+        <div class="ico" style="color:var(--tangerine)"><svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 26L26 10M18 8l10 2-2 10"/><path d="M10 20l-4 4 2 4 4-2" stroke-opacity="0.5"/></svg></div>
+        <h4 style="color:var(--tangerine)">Action</h4>
+        <p>One-liner right after the kill. Improbable car chase. Villain had a point, actually.</p>
+      </div>
+
+      <div class="feature">
+        <div class="ico" style="color:var(--gold)"><svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 10c-4-6-12-4-12 3 0 8 12 15 12 15s12-7 12-15c0-7-8-9-12-3z"/></svg></div>
+        <h4 style="color:var(--gold)">Rom-Com</h4>
+        <p>Airport chase in the third act. Miscommunication keeps them apart. Grand gesture in the rain.</p>
+      </div>
+
+      <div class="feature">
+        <div class="ico" style="color:var(--teal)"><svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="18" cy="18" r="10"/><circle cx="18" cy="18" r="4"/><path d="M18 8v6M18 22v6M8 18h6M22 18h6" stroke-opacity="0.4"/></svg></div>
+        <h4 style="color:var(--teal)">Thriller</h4>
+        <p>The twist recontextualizes everything. There's a mole in the group. The protagonist was wrong all along.</p>
+      </div>
+
+      <div class="feature">
+        <div class="ico" style="color:var(--cherry)"><svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="8" y="14" width="14" height="16" rx="2"/><path d="M12 14v-4a6 6 0 0112 0v4"/><circle cx="15" cy="22" r="2" fill="currentColor" stroke="none"/></svg></div>
+        <h4 style="color:var(--cherry)">Crime</h4>
+        <p>The heist goes sideways. Dirty cop or clean? The double-cross no one saw coming.</p>
+      </div>
+
+      <div class="feature">
+        <div class="ico" style="color:var(--tangerine)"><svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 6l2 8h8l-6.5 5 2.5 8L18 22l-6.5 5 2.5-8L8 14h8z"/></svg></div>
+        <h4 style="color:var(--tangerine)">Cult</h4>
+        <p>The town is hiding something. The outsider breaks the sacred rule. The ritual has a cost.</p>
+      </div>
+
+      <div class="feature">
+        <div class="ico" style="color:var(--gold)"><svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="18" cy="18" r="10"/><path d="M13 15c0-2 2-3.5 5-3.5s5 1.5 5 3.5c0 3-5 4-5 7"/><circle cx="18" cy="26" r="1.5" fill="currentColor" stroke="none"/></svg></div>
+        <h4 style="color:var(--gold)">Comedy</h4>
+        <p>The humiliation spiral. Mistaken identity goes too far. Unlikely duo becomes inseparable.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- final cta -->
+<section class="final" id="download">
+  <div class="shell">
+    <div class="eyebrow" style="justify-content:center;display:inline-flex;">Ready when the lights go down</div>
+    <h2>Lights down.<br><span style="color:var(--tangerine);">Draft up.</span></h2>
+    <p class="sub">Free to play. Bring it to your next movie night.</p>
+    <div class="ctas">
+      <button class="store-btn">
+        <img class="icon" src="../assets/icons/apple.svg" alt="">
+        <div class="label"><div class="top">Download on the</div><div class="name">App Store</div></div>
+      </button>
+      <button class="store-btn">
+        <img class="icon" src="../assets/icons/googleplay.svg" alt="">
+        <div class="label"><div class="top">Get it on</div><div class="name">Google Play</div></div>
+      </button>
+    </div>
+    <span class="below-cta">Free to play. No ads. No subscription.</span>
+  </div>
+</section>
+
+<!-- support modal -->
+<div class="modal-backdrop" id="supportBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Contact Support</h3>
+      <button class="modal-close" id="modalClose" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 2l10 10M12 2L2 12"/></svg>
+      </button>
+    </div>
+    <form id="supportForm" novalidate>
+      <div class="form-field">
+        <label for="supportName">Name</label>
+        <input type="text" id="supportName" name="name" placeholder="Your name" required>
+      </div>
+      <div class="form-field">
+        <label for="supportEmail">Email</label>
+        <input type="email" id="supportEmail" name="email" placeholder="you@example.com" required>
+      </div>
+      <div class="form-field">
+        <label for="supportIssue">Issue</label>
+        <select id="supportIssue" name="issue" required>
+          <option value="" disabled selected>Select an issue...</option>
+          <option value="Bug / Something is broken">Bug / Something is broken</option>
+          <option value="Account">Account</option>
+          <option value="Feature request">Feature request</option>
+          <option value="General question">General question</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="supportDetails">Details</label>
+        <textarea id="supportDetails" name="details" placeholder="Tell us what's going on..." required></textarea>
+      </div>
+      <button type="submit" class="modal-submit">Send Message</button>
+    </form>
+  </div>
+</div>
+
+<!-- footer -->
+<footer>
+  <div class="shell row">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <span class="footer-logo" style="display:inline-flex;align-items:center;gap:8px;"><img src="../assets/typecast/typecast-icon.png" alt="Typecast" height="20" style="display:block;"><span style="font-family:'Anton',var(--font-sans);font-size:16px;letter-spacing:0.04em;text-transform:uppercase;color:var(--ink);font-weight:400;">Typecast</span></span>
+      <span class="meta">/ Movie night made competitive</span>
+    </div>
+    <ul class="links">
+      <li><a href="privacy.html">Privacy</a></li>
+      <li><a href="terms.html">Terms</a></li>
+      <li><a href="#" id="supportLink">Support</a></li>
+    </ul>
+    <span class="meta">&copy; 2026 Hella Studios</span>
+  </div>
+</footer>
+
+<script>
+  // product switcher
+  (() => {
+    const btn = document.getElementById('parentBtn');
+    const menu = document.getElementById('switcher');
+    if (!btn || !menu) return;
+    const close = () => { btn.setAttribute('aria-expanded','false'); menu.classList.remove('open'); };
+    const open  = () => { btn.setAttribute('aria-expanded','true');  menu.classList.add('open'); };
+    btn.addEventListener('click', e => { e.stopPropagation(); btn.getAttribute('aria-expanded') === 'true' ? close() : open(); });
+    document.addEventListener('click', e => { if (!menu.contains(e.target) && e.target !== btn) close(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+  })();
+
+  // support modal
+  (() => {
+    const backdrop = document.getElementById('supportBackdrop');
+    const link     = document.getElementById('supportLink');
+    const closeBtn = document.getElementById('modalClose');
+    const form     = document.getElementById('supportForm');
+    if (!backdrop || !link) return;
+
+    const open  = () => { backdrop.classList.add('open'); document.body.style.overflow = 'hidden'; };
+    const close = () => { backdrop.classList.remove('open'); document.body.style.overflow = ''; };
+
+    link.addEventListener('click', e => { e.preventDefault(); open(); });
+    closeBtn.addEventListener('click', close);
+    backdrop.addEventListener('click', e => { if (e.target === backdrop) close(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && backdrop.classList.contains('open')) close(); });
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const name    = document.getElementById('supportName').value.trim();
+      const email   = document.getElementById('supportEmail').value.trim();
+      const issue   = document.getElementById('supportIssue').value;
+      const details = document.getElementById('supportDetails').value.trim();
+      if (!name || !email || !issue || !details) return;
+      const subject = encodeURIComponent('Typecast Support: ' + issue);
+      const body    = encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\nIssue: ' + issue + '\n\n' + details);
+      window.location.href = 'mailto:help@hellastudios.games?subject=' + subject + '&body=' + body;
+      close();
+      form.reset();
+    });
+  })();
+</script>
+</body>
+</html>
