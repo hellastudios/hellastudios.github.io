@@ -208,6 +208,19 @@
     pointer-events: none;
   }
 
+  /* Typecast card */
+  .card-typecast {
+    background-image: url('assets/typecast/typecast-thumbnail.png');
+    background-size: cover; background-position: center;
+    color: #fff; border: none;
+  }
+  .card-typecast::before {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 100%);
+    transition: background .28s;
+    pointer-events: none;
+  }
+
   /* Blade Blitz card */
   .card-bb {
     background-image: url('assets/blade-blitz/blade-blitz-thumbnail.png');
@@ -267,6 +280,12 @@
         <div class="card-tag">Mobile App &middot; iOS &amp; Android</div>
         <p class="card-desc">Plan your meals before the day starts and build consistent eating habits.</p>
         <span class="card-cta">View Habite</span>
+      </a>
+
+      <a href="typecast/" class="project-card card-typecast">
+        <div class="card-tag">Mobile Game &middot; iOS &amp; Android</div>
+        <p class="card-desc">Turn any movie into a game. Draft tropes, make your bets, and win the night.</p>
+        <span class="card-cta">View Typecast</span>
       </a>
 
       <a href="blade-blitz/" class="project-card card-bb">
